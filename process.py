@@ -25,16 +25,10 @@ plt.title('Image Histogram')
 plt.plot(x, smooth_hist)
 plt.plot(minima, smooth_hist[minima], 'rx')
 plt.show()
-new_img = np.array(img)
 
 # Thresholding of image from 1st minima of histogram
 # NOTE: This only works if background is noticeably darker than the brain
-for i, row in enumerate(new_img):
-    for j, val in enumerate(row):
-        if val < minima:
-            new_img[i][j] = 0
-        else:
-            new_img[i][j] = 255
+new_img = np.where(img>=minima, 255 * np.ones(img.shape), np.zeros(img.shape))
 new_img = gaussian_filter(new_img, 1)
 plt.title('Thresholded Image')
 plt.imshow(new_img, cmap='gray', vmin=0, vmax=255)
