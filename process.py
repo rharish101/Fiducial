@@ -29,10 +29,20 @@ plt.show()
 # Thresholding of image from 1st minima of histogram
 # NOTE: This only works if background is noticeably darker than the brain
 new_img = np.where(img>=minima, 255 * np.ones(img.shape), np.zeros(img.shape))
-new_img = gaussian_filter(new_img, 1)
+new_img = gaussian_filter(new_img, 2)
+new_img = ((new_img / new_img.max()) * 255).astype(np.uint8)
 plt.title('Thresholded Image')
 plt.imshow(new_img, cmap='gray', vmin=0, vmax=255)
 plt.show()
+
+# Canny-Edge detection
+edges = cv2.Canny(new_img, 100, 200)
+edges = gaussian_filter(edges, 2)
+edges = ((edges / edges.max()) * 255).astype(np.uint8)
+plt.title('Image Edges')
+plt.imshow(edges, cmap='gray', vmin=0, vmax=255)
+plt.show()
+
 exit()
 
 # Ratio Curve
