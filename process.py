@@ -6,10 +6,11 @@ from matplotlib import pyplot as plt
 
 # Display grayscale image
 def display(image, title=None):
+    plt.figure()
     if title is not None:
         plt.title(title)
     plt.imshow(image, cmap='gray', vmin=0, vmax=255)
-    plt.show()
+    plt.show(block=False)
 
 # Contrast Limited Adaptive Histogram Equalization
 def clahe_img(image, clipLimit=2.0, tileGridSize=(8, 8), verbose=False):
@@ -69,10 +70,11 @@ def thresh_hist(image, thresh_filter_sigma=2.7, clahe=True, verbose=False,
                  np.uint8)
 
     if verbose:
+        plt.figure()
         plt.title('Image Histogram')
         plt.plot(np.arange(len(hist)), hist)
         plt.plot(threshold, hist[threshold], 'rx')
-        plt.show()
+        plt.show(block=False)
 
         display(thresh_img, 'Thresholded Image')
 
@@ -167,10 +169,10 @@ def longest_edge(image, canny=True, outline_filter_sigma=2, verbose=False,
 img_source = './fiducial.png'
 
 img = cv2.imread(img_source, 0)
-plt.title('Image')
-plt.imshow(img, cmap='gray', vmin=0, vmax=255)
-plt.show()
+display(img, 'Image')
 
 if __name__ == '__main__':
     longest_edge(img, verbose=True)
+
+plt.show()
 
