@@ -65,7 +65,7 @@ def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2.7,
 
 # Adaptive gaussian thresholding
 def thresh_adaptive(image, binarize='mean', blocksize=17, thresh_C=6.5,
-                    thresh_filter_sigma=2.2, verbose=False):
+                    thresh_filter_sigma=1, verbose=False):
     if binarize == 'mean':
         method = cv2.ADAPTIVE_THRESH_MEAN_C
     elif binarize == 'gaussian':
@@ -86,6 +86,21 @@ def thresh_adaptive(image, binarize='mean', blocksize=17, thresh_C=6.5,
 
     return thresh_img
 
+# Thresholding with Otsu's Binarization
+def thresh_otsu(image, verbose=False):
+    _, raw_thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY +\
+                                  cv2.THRESH_OTSU)
+    smooth_thresh = gaussian_filter(raw_thresh, thresh_filter_sigma)
+    thresh_img = ((smooth_thresh.astype(np.float32) / smooth_thresh.max()) *\
+                  255).astype(np.uint8)
+
+    if verbose:
+        plt.title('Thresholded Image')
+        plt.imshow(thresh_img, cmap='gray', vmin=0, vmax=255)
+        plt.show()
+
+    return thresh_img
+
 # Canny-Edge detection
 def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
                **kwargs):
@@ -94,6 +109,8 @@ def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
     elif binarize in ('gaussian', 'mean'):
         image = thresh_adaptive(image, binarize=binarize, verbose=verbose,
                                 **kwargs)
+    elif binarize == 'otsu':
+        image = thresh_otsu(image, **kwargs)
     elif binarize is not None and not (type(binarize) == str and\
     binarize.lower() == 'none'):
         raise ValueError('Invalid option for binarization')
