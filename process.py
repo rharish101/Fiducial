@@ -4,11 +4,26 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
+# Display grayscale image
+def display(image, title=None):
+    if title is not None:
+        plt.title(title)
+    plt.imshow(image, cmap='gray', vmin=0, vmax=255)
+    plt.show()
+
+# Contrast Limited Adaptive Histogram Equalization
+def clahe_img(image, clipLimit=2.0, tileGridSize=(8, 8), verbose=False):
+    improved = cv2.createCLAHE(clipLimit=clipLimit,
+                               tileGridSize=tileGridSize).apply(image)
+    if verbose:
+        display(improved, 'After CLAHE')
+    return improved
+
 # Smoothened Image Histogram
-def img_hist(image, filter_sigma=10):
+def img_hist(image, hist_filter_sigma=2):
     hist = cv2.calcHist([image], [0], None, [256], [0, 256])
-    hist = np.reshape(gaussian_filter1d(hist, filter_sigma), (len(hist)))
-    return hist
+    hist = np.reshape(hist, (len(hist)))
+    return gaussian_filter1d(hist, hist_filter_sigma)
 
 # Returns "1st" local minima of a function
 def func_minima(func):
@@ -41,9 +56,11 @@ def norm_rate_curve(hist, filter_sigma=2, verbose=False):
 
 # Thresholding of image from 1st minima of histogram
 # NOTE: This only works if background is noticeably darker than the brain
-def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2.7,
-                verbose=False):
-    hist = img_hist(image, filter_sigma=hist_filter_sigma)
+def thresh_hist(image, thresh_filter_sigma=2.7, clahe=True, verbose=False,
+                **kwargs):
+    if clahe:
+        image = clahe_img(image, verbose=verbose)
+    hist = img_hist(image, **kwargs)
     threshold = func_minima(hist)
     new_img = np.where(image>=threshold, 255 * np.ones(image.shape),
                        np.zeros(image.shape))
@@ -57,15 +74,16 @@ def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2.7,
         plt.plot(threshold, hist[threshold], 'rx')
         plt.show()
 
-        plt.title('Thresholded Image')
-        plt.imshow(thresh_img, cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        display(thresh_img, 'Thresholded Image')
 
     return thresh_img
 
 # Adaptive gaussian thresholding
 def thresh_adaptive(image, binarize='mean', blocksize=17, thresh_C=6.5,
-                    thresh_filter_sigma=1, verbose=False):
+                    thresh_filter_sigma=1, clahe=True, verbose=False):
+    if clahe:
+        image = clahe_img(image, verbose=verbose)
+
     if binarize == 'mean':
         method = cv2.ADAPTIVE_THRESH_MEAN_C
     elif binarize == 'gaussian':
@@ -80,14 +98,14 @@ def thresh_adaptive(image, binarize='mean', blocksize=17, thresh_C=6.5,
                   255).astype(np.uint8)
 
     if verbose:
-        plt.title('Thresholded Image')
-        plt.imshow(thresh_img, cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        display(thresh_img, 'Thresholded Image')
 
     return thresh_img
 
 # Thresholding with Otsu's Binarization
-def thresh_otsu(image, verbose=False):
+def thresh_otsu(image, thresh_filter_sigma=2, clahe=True, verbose=False):
+    if clahe:
+        image = clahe_img(image, verbose=verbose)
     _, raw_thresh = cv2.threshold(image, 0, 255, cv2.THRESH_BINARY +\
                                   cv2.THRESH_OTSU)
     smooth_thresh = gaussian_filter(raw_thresh, thresh_filter_sigma)
@@ -95,9 +113,7 @@ def thresh_otsu(image, verbose=False):
                   255).astype(np.uint8)
 
     if verbose:
-        plt.title('Thresholded Image')
-        plt.imshow(thresh_img, cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        display(thresh_img, 'Thresholded Image')
 
     return thresh_img
 
@@ -120,9 +136,7 @@ def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
     edges = ((edges.astype(np.float32) / edges.max()) * 255).astype(np.uint8)
 
     if verbose:
-        plt.title('Image Edges')
-        plt.imshow(edges, cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        display(edges, 'Image Edges')
 
     return edges
 
@@ -146,9 +160,7 @@ def longest_edge(image, canny=True, outline_filter_sigma=2, verbose=False,
                     )) * 255).astype(np.uint8)
 
     if verbose:
-        plt.title('Longest Edge')
-        plt.imshow(outline_img, cmap='gray', vmin=0, vmax=255)
-        plt.show()
+        display(outline_img, 'Longest Edge')
         
     return outline_img
 
