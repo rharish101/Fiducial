@@ -48,7 +48,8 @@ def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2,
     new_img = np.where(image>=threshold, 255 * np.ones(image.shape),
                        np.zeros(image.shape))
     new_img = gaussian_filter(new_img, thresh_filter_sigma)
-    thresh_img =  ((new_img / new_img.max()) * 255).astype(np.uint8)
+    thresh_img = ((new_img.astype(np.float32) / new_img.max()) * 255).astype(
+                 np.uint8)
 
     if verbose:
         plt.title('Image Histogram')
@@ -69,7 +70,7 @@ def canny_edge(image, edge_filter_sigma=2, binarize=False, verbose=False,
         image = thresh_hist(image, verbose=verbose, **kwargs)
     edges = cv2.Canny(image, 100, 200)
     edges = gaussian_filter(edges, edge_filter_sigma)
-    edges = ((edges / edges.max()) * 255).astype(np.uint8)
+    edges = ((edges.astype(np.float32) / edges.max()) * 255).astype(np.uint8)
 
     if verbose:
         plt.title('Image Edges')
