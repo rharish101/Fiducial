@@ -64,7 +64,7 @@ def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2,
     return thresh_img
 
 # Canny-Edge detection
-def canny_edge(image, edge_filter_sigma=2, binarize=False, verbose=False,
+def canny_edge(image, edge_filter_sigma=2, binarize=True, verbose=False,
                **kwargs):
     if binarize:
         image = thresh_hist(image, verbose=verbose, **kwargs)
@@ -79,6 +79,27 @@ def canny_edge(image, edge_filter_sigma=2, binarize=False, verbose=False,
 
     return edges
 
+def longest_edge(image, canny=True, verbose=False, **kwargs):
+    if canny:
+        image = canny_edge(image, verbose=verbose, **kwargs)
+    image, contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL,
+                                                  cv2.CHAIN_APPROX_SIMPLE)
+    max_len = 0
+    outline = None
+    for contour in contours:
+        if contour.shape[0] > max_len:
+            max_len = contour.shape[0]
+            outline = contour
+    outline_img = cv2.drawContours(np.zeros(image.shape), [outline], -1,
+                                   (255, 255, 255), 2)
+
+    if verbose:
+        plt.title('Longest Edge')
+        plt.imshow(outline_img, cmap='gray', vmin=0, vmax=255)
+        plt.show()
+        
+    return outline_img
+
 img_source = './fiducial.png'
 
 img = cv2.imread(img_source, 0)
@@ -86,5 +107,5 @@ plt.title('Image')
 plt.imshow(img, cmap='gray', vmin=0, vmax=255)
 plt.show()
 
-canny_edge(img, binarize=True, verbose=True)
+longest_edge(img, verbose=True)
 
