@@ -166,13 +166,29 @@ def longest_edge(image, canny=True, outline_filter_sigma=2, verbose=False,
         
     return outline_img
 
+# Harris Corners
+def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
+                   verbose=False, **kwargs):
+    if outline:
+        image = longest_edge(image, verbose=verbose, **kwargs)
+
+    raw_corners = cv2.cornerHarris(image, blockSize, ksize, harris_k)
+    dilated = cv2.dilate(raw_corners, None)
+    _, scaled = cv2.threshold(dilated, 0.01 * dilated.max(), 255, 0)
+    corners = scaled.astype(np.uint8)
+
+    if verbose:
+        display(corners, 'Outline corners')
+
+    return corners
+
 img_source = './fiducial.png'
 
 img = cv2.imread(img_source, 0)
 display(img, 'Image')
 
 if __name__ == '__main__':
-    longest_edge(img, verbose=True)
+    harris_corners(img, verbose=True)
 
 plt.show()
 
