@@ -41,7 +41,7 @@ def norm_rate_curve(hist, filter_sigma=2, verbose=False):
 
 # Thresholding of image from 1st minima of histogram
 # NOTE: This only works if background is noticeably darker than the brain
-def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2,
+def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2.7,
                 verbose=False):
     hist = img_hist(image, filter_sigma=hist_filter_sigma)
     threshold = func_minima(hist)
@@ -63,11 +63,41 @@ def thresh_hist(image, hist_filter_sigma=10, thresh_filter_sigma=2,
 
     return thresh_img
 
+# Adaptive gaussian thresholding
+def thresh_adaptive(image, binarize='mean', blocksize=17, thresh_C=6.5,
+                    thresh_filter_sigma=2.2, verbose=False):
+    if binarize == 'mean':
+        method = cv2.ADAPTIVE_THRESH_MEAN_C
+    elif binarize == 'gaussian':
+        method = cv2.ADAPTIVE_THRESH_GAUSSIAN_C
+    else:
+        raise ValueError('Invalid option for binarization')
+
+    raw_thresh = cv2.adaptiveThreshold(image, 255, method,
+                                       cv2.THRESH_BINARY, blocksize, thresh_C)
+    smooth_thresh = gaussian_filter(raw_thresh, thresh_filter_sigma)
+    thresh_img = ((smooth_thresh.astype(np.float32) / smooth_thresh.max()) *\
+                  255).astype(np.uint8)
+
+    if verbose:
+        plt.title('Thresholded Image')
+        plt.imshow(thresh_img, cmap='gray', vmin=0, vmax=255)
+        plt.show()
+
+    return thresh_img
+
 # Canny-Edge detection
-def canny_edge(image, edge_filter_sigma=2, binarize=True, verbose=False,
+def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
                **kwargs):
-    if binarize:
+    if binarize == 'histogram':
         image = thresh_hist(image, verbose=verbose, **kwargs)
+    elif binarize in ('gaussian', 'mean'):
+        image = thresh_adaptive(image, binarize=binarize, verbose=verbose,
+                                **kwargs)
+    elif binarize is not None and not (type(binarize) == str and\
+    binarize.lower() == 'none'):
+        raise ValueError('Invalid option for binarization')
+
     edges = cv2.Canny(image, 100, 200)
     edges = gaussian_filter(edges, edge_filter_sigma)
     edges = ((edges.astype(np.float32) / edges.max()) * 255).astype(np.uint8)
@@ -79,7 +109,9 @@ def canny_edge(image, edge_filter_sigma=2, binarize=True, verbose=False,
 
     return edges
 
-def longest_edge(image, canny=True, verbose=False, **kwargs):
+# Longest-edge from contours in image
+def longest_edge(image, canny=True, outline_filter_sigma=2, verbose=False,
+                 **kwargs):
     if canny:
         image = canny_edge(image, verbose=verbose, **kwargs)
     image, contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL,
@@ -92,6 +124,9 @@ def longest_edge(image, canny=True, verbose=False, **kwargs):
             outline = contour
     outline_img = cv2.drawContours(np.zeros(image.shape), [outline], -1,
                                    (255, 255, 255), 2)
+    smooth_outline = gaussian_filter(outline_img, outline_filter_sigma)
+    outline_img = ((smooth_outline.astype(np.float32) / smooth_outline.max(
+                    )) * 255).astype(np.uint8)
 
     if verbose:
         plt.title('Longest Edge')
@@ -107,5 +142,6 @@ plt.title('Image')
 plt.imshow(img, cmap='gray', vmin=0, vmax=255)
 plt.show()
 
-longest_edge(img, verbose=True)
+if __name__ == '__main__':
+    longest_edge(img, verbose=True)
 
