@@ -183,6 +183,28 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
 
     return corners
 
+# Cropping image
+def crop(image, var=180, verbose=False, **kwargs):
+     l = image.shape[1]
+     upper_right_triangle = np.array([[image.shape[1] - var, 0],
+                                      [image.shape[1], 0],
+                                      [image.shape[1], var]])
+     lower_right_triangle = np.array([[l - var, l], [l, l - var], [l, l]])
+     upper_left_triangle = np.array([[0, 0], [var, 0], [0, var]])
+     lower_left_triangle = np.array([[0, l - var], [var, l], [0, l]])
+
+     color = [0, 0, 0]
+     #color = [255, 255, 255]
+     image = cv2.fillConvexPoly(image, upper_right_triangle, color)
+     image = cv2.fillConvexPoly(image, lower_right_triangle, color)
+     image = cv2.fillConvexPoly(image, lower_left_triangle, color)
+     image = cv2.fillConvexPoly(image, upper_left_triangle, color)
+
+     if verbose:
+        display(image, 'Cropped Image')
+
+     return image
+
 parser = argparse.ArgumentParser(description="Fiducial Localization")
 parser.add_argument('-i', '--image', metavar='', type=str,
                     help='image to be processed')
@@ -194,6 +216,7 @@ else:
 
 if __name__ == '__main__':
     display(img, 'Image')
+    img = crop(img, verbose=True)
     harris_corners(img, outline=False, verbose=True)
 
 plt.show()
