@@ -184,14 +184,17 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
     return corners
 
 # Cropping image
-def crop(image, var=180, verbose=False, **kwargs):
-     l = image.shape[1]
-     upper_right_triangle = np.array([[image.shape[1] - var, 0],
-                                      [image.shape[1], 0],
-                                      [image.shape[1], var]])
-     lower_right_triangle = np.array([[l - var, l], [l, l - var], [l, l]])
-     upper_left_triangle = np.array([[0, 0], [var, 0], [0, var]])
-     lower_left_triangle = np.array([[0, l - var], [var, l], [0, l]])
+def crop(image, ur_size=120, ul_size=100, lr_size=120, ll_size=180,
+         verbose=False, **kwargs):
+     image = image[20:, :]
+     col = image.shape[1]
+     upper_right_triangle = np.array([[col - ur_size, 0], [col, 0],
+                                      [col, ur_size]])
+     lower_right_triangle = np.array([[col - lr_size, col], [col, col - lr_size],
+                                      [col, col]])
+     upper_left_triangle = np.array([[0, 0], [ul_size, 0], [0, ul_size]])
+     lower_left_triangle = np.array([[0, col - ll_size], [ll_size, col],
+                                     [0, col]])
 
      color = [0, 0, 0]
      #color = [255, 255, 255]
