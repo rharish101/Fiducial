@@ -3,6 +3,7 @@ from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
+import argparse
 
 # Display grayscale image
 def display(image, title=None):
@@ -18,7 +19,7 @@ def clahe_img(image, clipLimit=2.0, tileGridSize=(8, 8), verbose=False):
                                tileGridSize=tileGridSize).apply(image)
     if verbose:
         display(improved, 'After CLAHE')
-    return improved
+    return improved.astype(np.uint8)
 
 # Smoothened Image Histogram
 def img_hist(image, hist_filter_sigma=2):
@@ -182,13 +183,18 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
 
     return corners
 
-img_source = './fiducial.png'
-
-img = cv2.imread(img_source, 0)
-display(img, 'Image')
+parser = argparse.ArgumentParser(description="Fiducial Localization")
+parser.add_argument('-i', '--image', metavar='', type=str,
+                    help='image to be processed')
+args = parser.parse_args()
+if args.image:
+    img = cv2.imread(args.image, 0)
+else:
+    img = cv2.imread('./fiducial.png', 0)
 
 if __name__ == '__main__':
-    harris_corners(img, verbose=True)
+    display(img, 'Image')
+    harris_corners(img, outline=False, verbose=True)
 
 plt.show()
 
