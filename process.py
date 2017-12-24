@@ -9,11 +9,26 @@ from random import randint
 import dicom
 
 # Import DICOM file as numpy array
-def import_dicom(path, max_threshold=255, image_threshold=0.05):
+def import_dicom(path, max_threshold=255, image_threshold=0.1,
+                 scale_grays=125):
+    if scale_grays > 255 or scale_grays < 0:
+        raise ValueError("scale_grays must be between 0 and 255")
+
     raw_image = dicom.read_file(path).pixel_array
+    raw_image = np.where(raw_image < 0, np.zeros(raw_image.shape), raw_image)
+
     if raw_image.max() > max_threshold:
-        _, scaled = cv2.threshold(raw_image, image_threshold * raw_image.max(),
-                                  255, 0)
+        threshold = image_threshold * raw_image.max()
+        if threshold > 255:
+            scaled = np.where(raw_image >= 255, np.ones(raw_image.shape) * 255,
+                              (raw_image / threshold) * scale_grays)
+        elif threshold > scale_grays:
+            scaled = np.where(raw_image >= threshold,
+                              np.ones(raw_image.shape) * 255,
+                              (raw_image / threshold) * scale_grays)
+        else:
+            scaled = np.where(raw_image >= threshold,
+                              np.ones(raw_image.shape) * 255, raw_image)
     else:
         scaled = np.zeros(raw_image.shape)
     return scaled.astype(np.uint8)
