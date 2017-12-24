@@ -4,6 +4,15 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 import argparse
+from sklearn.cluster import KMeans
+from random import randint
+import dicom
+
+# Import DICOM file as numpy array
+def import_dicom(path):
+    raw_image = dicom.read_file(path).pixel_array
+    _, scaled = cv2.threshold(raw_image, 0.01 * raw_image.max(), 255, 0)
+    return scaled.astype(np.uint8)
 
 # Display grayscale image
 def display(image, title=None):
@@ -213,7 +222,12 @@ parser.add_argument('-i', '--image', metavar='', type=str,
                     help='image to be processed')
 args = parser.parse_args()
 if args.image:
-    img = cv2.imread(args.image, 0)
+    try:
+        img = import_dicom(args.image)
+    except InvalidDicomError:
+        img = cv2.imread(args.image, 0)
+    if img is None:
+        raise Exception('Image is of an unsupported type')
 else:
     img = cv2.imread('./fiducial.png', 0)
 
