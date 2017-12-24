@@ -9,9 +9,13 @@ from random import randint
 import dicom
 
 # Import DICOM file as numpy array
-def import_dicom(path):
+def import_dicom(path, max_threshold=255, image_threshold=0.05):
     raw_image = dicom.read_file(path).pixel_array
-    _, scaled = cv2.threshold(raw_image, 0.01 * raw_image.max(), 255, 0)
+    if raw_image.max() > max_threshold:
+        _, scaled = cv2.threshold(raw_image, image_threshold * raw_image.max(),
+                                  255, 0)
+    else:
+        scaled = np.zeros(raw_image.shape)
     return scaled.astype(np.uint8)
 
 # Display grayscale image
