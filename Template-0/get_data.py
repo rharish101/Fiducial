@@ -36,7 +36,7 @@ def extract_data():
     return images, labels
 
 def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
-                 height_shift_range=0.15, shear_range=1.57, fill_val=0,
+                 height_shift_range=0.15, shear_range=60, fill_val=0,
                  horizontal_flip=True, vertical_flip=True):
     total_length = len(images)
     for image, label in zip(images[:total_length], labels[:total_length]):
@@ -49,7 +49,7 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
         for angle in np.arange(10, rotation_range + 1, 10):
             rot_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
             images_now.append(cv2.warpAffine(images_now[0], rot_matrix,
-                                             (cols, rows), borderMode=1,
+                                             (cols, rows),
                                              borderValue=fill_val))
 
         # Translation
@@ -61,10 +61,20 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
                 for img in images_now[:length]:
                     images_now.append(cv2.warpAffine(img, shift_matrix,
                                                      (cols, rows),
-                                                     borderMode=1,
                                                      borderValue=fill_val))
 
-        # TODO: Shear
+        # Shear
+        length = len(images_now)
+        pts1 = np.float32([[0, rows / 2], [cols, rows / 2], [cols / 2, 0]])
+        for shear_angle in np.arange(20, shear_range + 1, 20):
+            pts2 = np.float32([[0, rows / 2], [cols, rows / 2], [cols / 2,
+                                (rows / 2) * (1 - np.cos(np.deg2rad(
+                                shear_angle)))]])
+            shear_matrix = cv2.getAffineTransform(pts1, pts2)
+            for img in images_now[:length]:
+                images_now.append(cv2.warpAffine(img, shear_matrix,
+                                                 (cols, rows),
+                                                 borderValue=fill_val))
 
         # Flip
         if vertical_flip:
