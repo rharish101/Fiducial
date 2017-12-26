@@ -4,7 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 from keras.callbacks import EarlyStopping
 from keras.initializers import glorot_normal
-from get_data import get_data_gen
+from get_data import get_data
 
 model = Sequential()
 
@@ -27,9 +27,11 @@ model.compile(loss='binary_crossentropy', optimizer='adam',
               metrics=['accuracy'])
 
 test_split = 0.3
-train_data, train_labels, test_data, test_labels, generator =\
-    get_data_gen(test_split=test_split)
-model.fit_generator(generator.flow(train_data, train_labels, batch_size=32),
-                    steps_per_epoch=100, epochs=100, callbacks=[early_stop])
+train_data, train_labels, test_data, test_labels =\
+    get_data(test_split=test_split)
+#model.fit_generator(generator.flow(train_data, train_labels, batch_size=32),
+                    #steps_per_epoch=100, epochs=100, callbacks=[early_stop])
+model.fit(train_data, train_labels, batch_size=32, epochs=100,
+          callbacks=[early_stop])
 
 print(model.evaluate(test_data, test_labels, batch_size=200))
