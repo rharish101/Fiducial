@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os
 from scipy.ndimage import gaussian_filter
 import cv2
@@ -48,9 +49,9 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
         # Rotation
         for angle in np.arange(10, rotation_range + 1, 10):
             rot_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
-            images_now.append(cv2.warpAffine(images_now[0], rot_matrix,
-                                             (cols, rows),
-                                             borderValue=fill_val))
+            images_now.append(np.uint8(cv2.warpAffine(images_now[0], rot_matrix,
+                                                      (cols, rows),
+                                                      borderValue=fill_val)))
 
         # Translation
         length = len(images_now)
@@ -59,9 +60,8 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
                 shift_matrix = np.float32([[1, 0, cols * w_shift],
                                            [0, 1, rows * h_shift]])
                 for img in images_now[:length]:
-                    images_now.append(cv2.warpAffine(img, shift_matrix,
-                                                     (cols, rows),
-                                                     borderValue=fill_val))
+                    images_now.append(np.uint8(cv2.warpAffine(img, shift_matrix,
+                        (cols, rows), borderValue=fill_val)))
 
         # Shear
         length = len(images_now)
@@ -72,19 +72,18 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
                                 shear_angle)))]])
             shear_matrix = cv2.getAffineTransform(pts1, pts2)
             for img in images_now[:length]:
-                images_now.append(cv2.warpAffine(img, shear_matrix,
-                                                 (cols, rows),
-                                                 borderValue=fill_val))
+                images_now.append(np.uint8(cv2.warpAffine(img, shear_matrix,
+                    (cols, rows), borderValue=fill_val)))
 
         # Flip
         if vertical_flip:
             length = len(images_now)
             for img in images_now[:length]:
-                images_now.append(cv2.flip(img, flipCode=0))
+                images_now.append(np.uint8(cv2.flip(img, flipCode=0)))
         if horizontal_flip:
             length = len(images_now)
             for img in images_now[:length]:
-                images_now.append(cv2.flip(img, flipCode=1))
+                images_now.append(np.uint8(cv2.flip(img, flipCode=1)))
 
         images += images_now[1:]
         labels += (label * np.ones((len(images_now) - 1,))).tolist()
@@ -105,10 +104,27 @@ def split_data(data, labels, test_split=0.3):
     test_labels = labels[-int(len(labels) * test_split):]
     return train_data, train_labels, test_data, test_labels
 
-def get_data(**kwargs):
-    data, labels = extract_data()
-    data, labels = augment_data(data, labels)
-    data, labels = shuffle_data(np.reshape(data, (-1, 50 * 50)), labels)
-    data = np.reshape(data, (-1, 50, 50, 1))
-    return split_data(data, labels, **kwargs)
+def get_data(from_disk=True, **kwargs):
+    if not from_disk or not set(['template_0_train_data.npy',
+    'template_0_train_labels.npy', 'template_0_test_data.npy',
+    'template_0_test_labels.npy']).issubset(os.listdir('.')):
+        data, labels = extract_data()
+        data, labels = augment_data(data, labels)
+        data, labels = shuffle_data(np.reshape(data, (-1, 50 * 50)), labels)
+        data = np.reshape(data, (-1, 50, 50, 1))
+        train_data, train_labels, test_data, test_labels = split_data(data,
+            labels, **kwargs)
+
+        print("Saving to disk...")
+        np.save('template_0_train_data.npy', train_data.astype(np.uint8))
+        np.save('template_0_train_labels.npy', train_labels.astype(np.uint8))
+        np.save('template_0_test_data.npy', test_data.astype(np.uint8))
+        np.save('template_0_test_labels.npy', test_labels.astype(np.uint8))
+        del train_data, train_labels, test_data, test_labels
+
+    train_data = np.load('template_0_train_data.npy', mmap_mode='r')
+    train_labels = np.load('template_0_train_labels.npy', mmap_mode='r')
+    test_data = np.load('template_0_test_data.npy', mmap_mode='r')
+    test_labels = np.load('template_0_test_labels.npy', mmap_mode='r')
+    return train_data, train_labels, test_data, test_labels
 

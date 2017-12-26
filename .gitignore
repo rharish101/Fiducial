@@ -6,6 +6,10 @@
 Fiducial data/
 Fiducial data.zip
 test.py
+Template-0/template_0_train_data.npy
+Template-0/template_0_train_labels.npy
+Template-0/template_0_test_data.npy
+Template-0/template_0_test_labels.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
