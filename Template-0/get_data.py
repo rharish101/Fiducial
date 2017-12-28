@@ -47,7 +47,7 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
         rows, cols = image.shape
 
         # Rotation
-        for angle in np.arange(10, rotation_range + 1, 10):
+        for angle in np.arange(15, rotation_range + 1, 15):
             rot_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
             images_now.append(np.uint8(cv2.warpAffine(images_now[0], rot_matrix,
                                                       (cols, rows),
@@ -55,8 +55,8 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
 
         # Translation
         length = len(images_now)
-        for w_shift in np.arange(0.05, width_shift_range + 0.01, 0.05):
-            for h_shift in np.arange(0.05, height_shift_range + 0.01, 0.05):
+        for w_shift in np.arange(0.075, width_shift_range + 0.01, 0.075):
+            for h_shift in np.arange(0.075, height_shift_range + 0.01, 0.075):
                 shift_matrix = np.float32([[1, 0, cols * w_shift],
                                            [0, 1, rows * h_shift]])
                 for img in images_now[:length]:
