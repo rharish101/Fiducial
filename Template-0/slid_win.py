@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from keras.models import load_model
 from matplotlib import pyplot as plt
-from time import sleep
 
 # Display grayscale image
 def display(image, title=None, pause=None):
@@ -12,10 +11,19 @@ def display(image, title=None, pause=None):
         plt.figure()
     if title is not None:
         plt.title(title)
-    plt.imshow(image, cmap='gray', vmin=0, vmax=255)
-    plt.show(block=False)
+
+    if display.blank or pause is None:
+        display.image = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
+        display.blank = False
+    else:
+        display.image.set_data(image)
+
     if pause:
-        sleep(pause)
+        plt.pause(pause)
+    else:
+        plt.show(block=False)
+display.blank = True
+display.image = None
 
 # Generator to yield sliding windows
 def windows(image, window_size, stride_size):
@@ -71,7 +79,7 @@ def sliding_windows(image, model_name, model_input_shape, label,
                                      micro_image_box[2]:micro_image_box[3]]
 
             if verbose:
-                display(micro_image, pause=True)
+                display(micro_image, pause=1)
 
             if clahe:
                 micro_image = clahe_img(micro_image)
