@@ -38,7 +38,7 @@ def extract_data():
 
 def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
                  height_shift_range=0.15, shear_range=60, fill_val=0,
-                 horizontal_flip=True, vertical_flip=True):
+                 horizontal_flip=True, vertical_flip=True, **kwargs):
     total_length = len(images)
     for image, label in zip(images[:total_length], labels[:total_length]):
         if len(image.shape) == 3:
@@ -97,7 +97,7 @@ def shuffle_data(data, labels):
     labels = combined.T[-1].T
     return data, labels
 
-def split_data(data, labels, test_split=0.3):
+def split_data(data, labels, test_split=0.3, **kwargs):
     train_data = data[:-int(len(data) * test_split)]
     train_labels = labels[:-int(len(labels) * test_split)]
     test_data = data[-int(len(data) * test_split):]
@@ -105,26 +105,22 @@ def split_data(data, labels, test_split=0.3):
     return train_data, train_labels, test_data, test_labels
 
 def get_data(from_disk=True, **kwargs):
-    if not from_disk or not set(['template_0_train_data.npy',
-    'template_0_train_labels.npy', 'template_0_test_data.npy',
-    'template_0_test_labels.npy']).issubset(os.listdir('.')):
+    keys = ('train_data', 'train_labels', 'test_data', 'test_labels')
+
+    if not from_disk or not set(['template_0_' + arr + '.npy'\
+    for arr in keys]).issubset(os.listdir('.')):
         data, labels = extract_data()
-        data, labels = augment_data(data, labels)
+        data, labels = augment_data(data, labels, **kwargs)
         data, labels = shuffle_data(np.reshape(data, (-1, 50 * 50)), labels)
         data = np.reshape(data, (-1, 50, 50, 1))
-        train_data, train_labels, test_data, test_labels = split_data(data,
-            labels, **kwargs)
-
+        data = dict(zip(keys, split_data(data, labels, **kwargs)))
         print("Saving to disk...")
-        np.save('template_0_train_data.npy', train_data.astype(np.uint8))
-        np.save('template_0_train_labels.npy', train_labels.astype(np.uint8))
-        np.save('template_0_test_data.npy', test_data.astype(np.uint8))
-        np.save('template_0_test_labels.npy', test_labels.astype(np.uint8))
-        del train_data, train_labels, test_data, test_labels
+        for arr in keys:
+            np.save('template_0_' + arr + '.npy', data[arr].astype(np.uint8))
+        del data
 
-    train_data = np.load('template_0_train_data.npy', mmap_mode='r')
-    train_labels = np.load('template_0_train_labels.npy', mmap_mode='r')
-    test_data = np.load('template_0_test_data.npy', mmap_mode='r')
-    test_labels = np.load('template_0_test_labels.npy', mmap_mode='r')
-    return train_data, train_labels, test_data, test_labels
+    data = {}
+    for arr in keys:
+        data[arr] = np.load('template_0_' + arr + '.npy', mmap_mode='r')
+    return data.values()
 
