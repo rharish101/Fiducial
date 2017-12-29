@@ -226,6 +226,31 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
         display(corners, 'Outline corners')
 
     return corners
+  
+  #SIFT corner detection ERROR 
+def sift(image,verbose=True,**kwargs):
+    image=longest_edge(image,verbose=verbose,**kwargs)
+    sift1 = cv2.SIFT()
+    kp = sift1.detect(image,None)
+    image=cv2.drawKeypoints(gray,kp)
+    
+    if verbose: 
+       display(image,'SIFT_corners')
+    return image
+    
+#shi-Thomsai corner detector
+def shi_thomsai(image,outline=True,verbose=True,**kwargs):
+    if outline:
+       image=longest_edge(image, verbose=verbose, **kwargs)
+    corners = cv2.goodFeaturesToTrack(image,25,0.01,10)
+    corners = np.int0(corners)
+    
+    if verbose:
+       for i in corners:
+         x,y = i.ravel()
+         cv2.circle(image,(x,y),3,255,-1)
+       display(image)
+    return image
 
 
 # Cropping image
