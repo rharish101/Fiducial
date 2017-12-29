@@ -227,12 +227,13 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
 
     return corners
   
-  #SIFT corner detection ERROR 
-def sift(image,verbose=True,**kwargs):
-    image=longest_edge(image,verbose=verbose,**kwargs)
+  #SIFT corner detection ERROR :'Module has no object SIFT'
+def sift(image,outline=True,verbose=True,**kwargs):
+    if outline:
+      image=longest_edge(image,verbose=verbose,**kwargs)
     sift1 = cv2.SIFT()
     kp = sift1.detect(image,None)
-    image=cv2.drawKeypoints(gray,kp)
+    image=cv2.drawKeypoints(image,kp)
     
     if verbose: 
        display(image,'SIFT_corners')
