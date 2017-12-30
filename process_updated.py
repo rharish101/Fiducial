@@ -183,6 +183,19 @@ def laplacian(image,verbose=True,edge_filter_sigma=4,**kwargs):
         display(edges, 'Image Edges')
 
     return edges
+  
+ #Sobel filter edge detection
+    def sobel(image,verbose=True,**kwargs):
+    image=thresh_hist(image,verbose=verbose,**kwargs)
+    sobel64f = cv2.Sobel(img,cv2.CV_64F,1,1,ksize=5)
+    abs_sobel64f = np.absolute(sobel64f)
+    sobel_8u_M = np.uint8(abs_sobel64f)
+    sobel_8u=gaussian_filter(sobel_8u_M,2)
+    sobel_final=sobel_8u
+    sobel_final=((sobel_final.astype(np.float32) / sobel_final.max()) * 255).astype(np.uint8)
+    if verbose:
+       display(sobel_final,'sobel_edges')
+   
     
 # Longest-edge from contours in image
 def longest_edge(image, canny=False,outline_filter_sigma=2, verbose=True,
@@ -253,6 +266,30 @@ def shi_thomsai(image,outline=True,verbose=True,**kwargs):
        display(image)
     return image
 
+#FAST corner detector
+def fast(image,outline=False,nor_max_supperesion=True,verbose=False,**kwargs):
+    if outline:
+       image=longest_edge(image, verbose=verbose, **kwargs)
+    fast = cv2.FastFeatureDetector_create() 
+    if nor_max_supperesion is not True:
+       kp = fast.detect(img,None)
+    else:
+       fast.setNonmaxSuppression(0)
+       kp = fast.detect(img,None)
+    img2 = cv2.drawKeypoints(img, kp, None, color=(127,0,0))
+    if verbose:
+       display(img2,'FAST Corners')
+
+#ORB corner generator 
+def orb(image,verbose=True,WTA_K=4,outline=False,**kwargs):
+    if outline:
+       image=longest_edge(image, verbose=verbose, **kwargs)
+    orb = cv2.ORB_create(WTA_K=WTA_K)
+    kp = orb.detect(img,None)
+    kp, des = orb.compute(img, kp)
+    img2 = cv2.drawKeypoints(img, kp, None, color=(0,255,0), flags=0)
+    if verbose:
+       display(img2,'ORB Corners')  
 
 # Cropping image
 def crop(image, ur_size=120, ul_size=100, lr_size=120, ll_size=180,
