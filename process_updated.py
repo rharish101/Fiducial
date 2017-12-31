@@ -258,13 +258,20 @@ def shi_thomsai(image,outline=True,verbose=True,**kwargs):
        image=longest_edge(image, verbose=verbose, **kwargs)
     corners = cv2.goodFeaturesToTrack(image,25,0.01,10)
     corners = np.int0(corners)
+    x_coor=[]
+    y_coor=[]
+    for j in corners:
+        a,b =j.ravel()
+        x_coor.append(a),y_coor.append(b)
+    z=zip(x_coor,y_coor)   
+    print z
     
     if verbose:
        for i in corners:
          x,y = i.ravel()
          cv2.circle(image,(x,y),3,255,-1)
        display(image)
-    return image
+    return image,z
 
 #FAST corner detector
 def fast(image,outline=False,nor_max_supperesion=True,verbose=False,**kwargs):
