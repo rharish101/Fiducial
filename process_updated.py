@@ -1,3 +1,4 @@
+from __future__ import print_function
 from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
 import numpy as np
 import cv2
@@ -172,7 +173,7 @@ def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
 
  
 #laplacian edge detection
-def laplacian(image,verbose=True,edge_filter_sigma=4,**kwargs):
+def laplacian(image,verbose=False,edge_filter_sigma=4,**kwargs):
     image = thresh_hist(image, verbose=verbose, **kwargs)
     edges= cv2.Laplacian(image,cv2.CV_64F)
     edges = gaussian_filter(edges, edge_filter_sigma)
@@ -184,8 +185,8 @@ def laplacian(image,verbose=True,edge_filter_sigma=4,**kwargs):
 
     return edges
   
- #Sobel filter edge detection
-    def sobel(image,verbose=True,**kwargs):
+#Sobel filter edge detection
+def sobel(image,verbose=False,**kwargs):
     image=thresh_hist(image,verbose=verbose,**kwargs)
     sobel64f = cv2.Sobel(img,cv2.CV_64F,1,1,ksize=5)
     abs_sobel64f = np.absolute(sobel64f)
@@ -198,7 +199,7 @@ def laplacian(image,verbose=True,edge_filter_sigma=4,**kwargs):
    
     
 # Longest-edge from contours in image
-def longest_edge(image, canny=False,outline_filter_sigma=2, verbose=True,
+def longest_edge(image, canny=False,outline_filter_sigma=2, verbose=False,
                  **kwargs):
     if canny:
         image = canny_edge(image, verbose=verbose, **kwargs)
@@ -241,7 +242,7 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
     return corners
   
   #SIFT corner detection ERROR :'Module has no object SIFT'
-def sift(image,outline=True,verbose=True,**kwargs):
+def sift(image,outline=True,verbose=False,**kwargs):
     if outline:
       image=longest_edge(image,verbose=verbose,**kwargs)
     sift1 = cv2.SIFT()
@@ -252,11 +253,13 @@ def sift(image,outline=True,verbose=True,**kwargs):
        display(image,'SIFT_corners')
     return image
     
-#shi-Thomsai corner detector
-def shi_thomsai(image,outline=True,verbose=True,**kwargs):
+#shi-tomasi corner detector
+def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
+               verbose=False, **kwargs):
     if outline:
        image=longest_edge(image, verbose=verbose, **kwargs)
-    corners = cv2.goodFeaturesToTrack(image,25,0.01,10)
+
+    corners = cv2.goodFeaturesToTrack(image, maxCorners, qualityLevel, 10)
     corners = np.int0(corners)
     x_coor=[]
     y_coor=[]
@@ -264,13 +267,13 @@ def shi_thomsai(image,outline=True,verbose=True,**kwargs):
         a,b =j.ravel()
         x_coor.append(a),y_coor.append(b)
     z=zip(x_coor,y_coor)   
-    print z
+    print(z)
     
     if verbose:
-       for i in corners:
-         x,y = i.ravel()
-         cv2.circle(image,(x,y),3,255,-1)
-       display(image)
+        for i in corners:
+            x,y = i.ravel()
+            cv2.circle(image,(x,y),3,255,-1)
+        display(image, "Shi-tomasi")
     return image,z
 
 #FAST corner detector
@@ -288,13 +291,14 @@ def fast(image,outline=False,nor_max_supperesion=True,verbose=False,**kwargs):
        display(img2,'FAST Corners')
 
 #ORB corner generator 
-def orb(image,verbose=True,WTA_K=4,outline=False,**kwargs):
+def orb_corner(image, verbose=False, WTA_K=4, nfeatures=100, outline=False,
+               **kwargs):
     if outline:
-       image=longest_edge(image, verbose=verbose, **kwargs)
-    orb = cv2.ORB_create(WTA_K=WTA_K)
-    kp = orb.detect(img,None)
-    kp, des = orb.compute(img, kp)
-    img2 = cv2.drawKeypoints(img, kp, None, color=(0,255,0), flags=0)
+       image = longest_edge(image, verbose=verbose, **kwargs)
+    orb = cv2.ORB_create(nfeatures=nfeatures, WTA_K=WTA_K)
+    kp = orb.detect(image, None)
+    kp, des = orb.compute(image, kp)
+    img2 = cv2.drawKeypoints(image, kp, None, color=(0,255,0), flags=0)
     if verbose:
        display(img2,'ORB Corners')  
 
