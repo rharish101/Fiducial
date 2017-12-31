@@ -171,11 +171,39 @@ def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
 
     return edges
 
+# Laplacian based edge detection
+def laplacian_edge(image, edge_filter_sigma=4, binarize='histogram',
+                   verbose=False, **kwargs):
+    if binarize == 'histogram':
+        image = thresh_hist(image, verbose=verbose, **kwargs)
+    elif binarize in ('gaussian', 'mean'):
+        image = thresh_adaptive(image, binarize=binarize, verbose=verbose,
+                                **kwargs)
+    elif binarize == 'otsu':
+        image = thresh_otsu(image, **kwargs)
+    elif binarize is not None and not (type(binarize) == str and\
+    binarize.lower() == 'none'):
+        raise ValueError('Invalid option for binarization')
+
+    edges = cv2.Laplacian(image, cv2.CV_64F)
+    edges = gaussian_filter(edges, edge_filter_sigma)
+    edges = ((edges.astype(np.float32) / edges.max()) * 255).astype(np.uint8)
+
+    if verbose:
+        display(edges, 'Image Edges')
+
+    return edges
+  
 # Longest-edge from contours in image
-def longest_edge(image, canny=True, outline_filter_sigma=2, verbose=False,
-                 **kwargs):
-    if canny:
+def longest_edge(image, mode='laplacian', outline_filter_sigma=2,
+                 verbose=False, **kwargs):
+    if mode.lower() == 'laplacian':
+        image = laplacian_edge(image, verbose=verbose, **kwargs)
+    elif mode.lower() == 'canny':
         image = canny_edge(image, verbose=verbose, **kwargs)
+    else:
+        raise ValueError("Invalid mode for edge detection")
+
     image, contours, hierarchy = cv2.findContours(image, cv2.RETR_EXTERNAL,
                                                   cv2.CHAIN_APPROX_SIMPLE)
     max_len = 0
@@ -207,7 +235,23 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
     corners = scaled.astype(np.uint8)
 
     if verbose:
-        display(corners, 'Outline corners')
+        display(corners, 'Harris corner detection')
+
+    return corners
+
+# Shi-Tomasi corner detector
+def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
+               verbose=False, **kwargs):
+    if outline:
+       image = longest_edge(image, verbose=verbose, **kwargs)
+
+    corners = cv2.goodFeaturesToTrack(image, maxCorners, qualityLevel, 10)
+    corners = np.reshape(np.int_(corners), (-1, 2))
+
+    if verbose:
+        for corner in corners:
+            cv2.circle(image, tuple(corner), 3, (255, 255, 255), -1)
+        display(image, "Shi-Tomasi corner detection")
 
     return corners
 
@@ -225,7 +269,6 @@ def crop(image, ur_size=120, ul_size=100, lr_size=120, ll_size=180,
                                      [0, col]])
 
      color = [0, 0, 0]
-     #color = [255, 255, 255]
      image = cv2.fillConvexPoly(image, upper_right_triangle, color)
      image = cv2.fillConvexPoly(image, lower_right_triangle, color)
      image = cv2.fillConvexPoly(image, lower_left_triangle, color)
@@ -253,7 +296,7 @@ else:
 if __name__ == '__main__':
     display(img, 'Image')
     img = crop(img, verbose=True)
-    harris_corners(img, outline=False, verbose=True)
+    shi_tomasi(img, outline=True, verbose=True)
 
 plt.show()
 

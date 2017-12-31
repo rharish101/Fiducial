@@ -199,7 +199,7 @@ def sobel(image,verbose=False,**kwargs):
    
     
 # Longest-edge from contours in image
-def longest_edge(image, canny=False,outline_filter_sigma=2, verbose=False,
+def longest_edge(image, canny=False, outline_filter_sigma=2, verbose=False,
                  **kwargs):
     if canny:
         image = canny_edge(image, verbose=verbose, **kwargs)
@@ -253,7 +253,7 @@ def sift(image,outline=True,verbose=False,**kwargs):
        display(image,'SIFT_corners')
     return image
     
-#shi-tomasi corner detector
+# Shi-Tomasi corner detector
 def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
                verbose=False, **kwargs):
     if outline:
@@ -264,16 +264,16 @@ def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
     x_coor=[]
     y_coor=[]
     for j in corners:
-        a,b =j.ravel()
-        x_coor.append(a),y_coor.append(b)
+        a, b = j.ravel()
+        x_coor.append(a)
+        y_coor.append(b)
     z=zip(x_coor,y_coor)   
-    print(z)
-    
+    for i in corners:
+        x,y = i.ravel()
+        cv2.circle(image,(x,y),3,255,-1)
+
     if verbose:
-        for i in corners:
-            x,y = i.ravel()
-            cv2.circle(image,(x,y),3,255,-1)
-        display(image, "Shi-tomasi")
+        display(image, "Shi-Tomasi Corner Detection")
     return image,z
 
 #FAST corner detector
