@@ -151,13 +151,13 @@ def thresh_otsu(image, thresh_filter_sigma=2, clahe=True, verbose=False):
 # Canny-Edge detection
 def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
                **kwargs):
-    if binarize == 'histogram':
+    if binarize in ('histogram', 'hist'):
         image = thresh_hist(image, verbose=verbose, **kwargs)
     elif binarize in ('gaussian', 'mean'):
         image = thresh_adaptive(image, binarize=binarize, verbose=verbose,
                                 **kwargs)
     elif binarize == 'otsu':
-        image = thresh_otsu(image, **kwargs)
+        image = thresh_otsu(image, verbose=verbose, **kwargs)
     elif binarize is not None and not (type(binarize) == str and\
     binarize.lower() == 'none'):
         raise ValueError('Invalid option for binarization')
@@ -172,20 +172,21 @@ def canny_edge(image, edge_filter_sigma=4, binarize='histogram', verbose=False,
     return edges
 
 # Laplacian based edge detection
-def laplacian_edge(image, edge_filter_sigma=4, binarize='histogram',
+def laplacian_edge(image, edge_filter_sigma=1, binarize='histogram',
                    verbose=False, **kwargs):
-    if binarize == 'histogram':
+    if binarize in ('histogram', 'hist'):
         image = thresh_hist(image, verbose=verbose, **kwargs)
     elif binarize in ('gaussian', 'mean'):
         image = thresh_adaptive(image, binarize=binarize, verbose=verbose,
                                 **kwargs)
     elif binarize == 'otsu':
-        image = thresh_otsu(image, **kwargs)
+        image = thresh_otsu(image, verbose=verbose, **kwargs)
     elif binarize is not None and not (type(binarize) == str and\
     binarize.lower() == 'none'):
         raise ValueError('Invalid option for binarization')
 
     edges = cv2.Laplacian(image, cv2.CV_64F)
+    edges = np.where(edges < 0, np.zeros(edges.shape), edges)
     edges = gaussian_filter(edges, edge_filter_sigma)
     edges = ((edges.astype(np.float32) / edges.max()) * 255).astype(np.uint8)
 
@@ -240,7 +241,7 @@ def harris_corners(image, outline=True, blockSize=2, ksize=3, harris_k=0.06,
     return corners
 
 # Shi-Tomasi corner detector
-def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
+def shi_tomasi(image, maxCorners=10, qualityLevel=0.1, outline=True,
                verbose=False, **kwargs):
     if outline:
        image = longest_edge(image, verbose=verbose, **kwargs)
@@ -256,7 +257,7 @@ def shi_tomasi(image, maxCorners=25, qualityLevel=0.1, outline=True,
     return corners
 
 # Cropping image
-def crop(image, ur_size=120, ul_size=100, lr_size=120, ll_size=180,
+def crop(image, ur_size=125, ul_size=100, lr_size=120, ll_size=180,
          verbose=False, **kwargs):
      image = image[20:, :]
      col = image.shape[1]
@@ -291,12 +292,15 @@ if args.image:
     if img is None:
         raise Exception('Image is of an unsupported type')
 else:
-    img = cv2.imread('./fiducial.png', 0)
+    img = cv2.imread('./Fiducial data/PVC skull model/Sequential scan/'\
+                     'Patient-BARC ACRYLIC SKULL/Study_34144_CT_SKULL'\
+                     '[20160627]/Series_002_Plain Scan/IM83.jpg', 0)
+    img = crop(img)
 
 if __name__ == '__main__':
     display(img, 'Image')
-    img = crop(img, verbose=True)
-    shi_tomasi(img, outline=True, verbose=True)
+    img = laplacian_edge(img, verbose=True)
+    shi_tomasi(img, outline=False, verbose=True)
 
 plt.show()
 
