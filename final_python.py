@@ -37,7 +37,7 @@ template2('axial',1)=False
 while index is not equal to N and template1('axial',index)['Bool'] is not True and template2('axial',index)['Bool'] is not True:
  template1('axial',index)
  template2('axial',index)
- index++
+ index=index+1
  
 #some issues reagarding last if statement
 for a in range(x_dim):
