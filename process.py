@@ -34,12 +34,24 @@ def import_dicom(path, max_threshold=255, image_threshold=0.1,
     return scaled.astype(np.uint8)
 
 # Display grayscale image
-def display(image, title=None):
-    plt.figure()
+def display(image, title=None, pause=None):
+    if pause is None:
+        plt.figure()
     if title is not None:
         plt.title(title)
-    plt.imshow(image, cmap='gray', vmin=0, vmax=255)
-    plt.show(block=False)
+
+    if display.blank or pause is None:
+        display.image = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
+        display.blank = False
+    else:
+        display.image.set_data(image)
+
+    if pause:
+        plt.pause(pause)
+    else:
+        plt.show(block=False)
+display.blank = True
+display.image = None
 
 # Contrast Limited Adaptive Histogram Equalization
 def clahe_img(image, clipLimit=2.0, tileGridSize=(8, 8), verbose=False):
@@ -299,8 +311,7 @@ else:
 
 if __name__ == '__main__':
     display(img, 'Image')
-    img = laplacian_edge(img, verbose=True)
-    shi_tomasi(img, outline=False, verbose=True)
+    shi_tomasi(img, verbose=True)
 
 plt.show()
 
