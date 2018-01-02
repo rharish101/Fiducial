@@ -306,7 +306,7 @@ if args.image:
 else:
     img = cv2.imread('./Fiducial data/PVC skull model/Sequential scan/'\
                      'Patient-BARC ACRYLIC SKULL/Study_34144_CT_SKULL'\
-                     '[20160627]/Series_002_Plain Scan/IM83.jpg', 0)
+                     '[20160627]/Series_002_Plain Scan/IM94.jpg', 0)
     img = crop(img)
 
 if __name__ == '__main__':
