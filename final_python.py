@@ -47,7 +47,7 @@ def god_function(list_axial,list_coronal,list_saggital):
         while index is not  N:
          template1('axial',index)
          template2('axial',index)
-         index++
+         index=index+1
 
 
         for a in range(x_dim):
