@@ -22,20 +22,20 @@ def image(plane,index):
     else:
        image=list_saggital[index-1]
 
-return image
+    return image
 
 
 def template1(plane,index):
    image=image(plane,index)
 #Boolean is true if image has template1 
 #x,y are the coordinates of the center of concentric circles and sets Ma[x][y][index]=1 is plane='axial'....
-return {'Bool':,'x_coor':,'y_coor':}
+   return {'Bool':,'x_coor':,'y_coor':}
 
 def template2(plane,index):
    image=image(plane,index)
 #x,y are the coordinates of the center of the valley
 #returns true if template2 is found and sets Ma[x][y][index]=2 if plane='axial'...    
-return {'Bool': ,'x_coor': ,'y_coor': }
+   return {'Bool': ,'x_coor': ,'y_coor': }
 
 def god_function(list_axial,list_coronal,list_saggital): 
         
@@ -64,7 +64,7 @@ def god_function(list_axial,list_coronal,list_saggital):
                          print 'Fiducial present at (a1,b1,c1)'
                          fidu_coordinates[a1][b1][c1]=1
 
-return  fidu_coordinates      
+        return  fidu_coordinates      
 
 
 
