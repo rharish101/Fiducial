@@ -52,7 +52,7 @@ def god_function(list_axial,list_coronal,list_saggital):
             for b in range(y_dim):
                 for c in range(z_dim):
                     if Ms[a][b][c]==1:
-                       if template2('saggital',a) is True and template2('coronal',b) is True:
+                       if template2('saggital',a)['Bool'] is True and template2('coronal',b)['Bool'] is True:
                           print 'Fiducial present at (a,b,c)'
                           fidu_coordinates[a][b][c]=1
 
@@ -60,7 +60,7 @@ def god_function(list_axial,list_coronal,list_saggital):
             for b1 in range(y_dim):
                 for c1 in range(z_dim):
                     if Ms[a1][b1][c1]==2:
-                       if (template1('saggital',a1) or template2('saggital',a1)) and (template1('saggital',b1) or template2('coronal',b1) is True:
+                       if (template1('saggital',a1)['Bool'] or template2('saggital',a1)['Bool']) and (template1('saggital',b1)['Bool'] or template2('coronal',b1)['Bool']:
                          print 'Fiducial present at (a1,b1,c1)'
                          fidu_coordinates[a1][b1][c1]=1
 
