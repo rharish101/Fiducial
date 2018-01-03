@@ -38,9 +38,7 @@ def template2(plane,index):
 return {'Bool': ,'x_coor': ,'y_coor': }
 
 def god_function(list_axial,list_coronal,list_saggital): 
-        list_axial=list_axial 
-        list_coronal=list_coronal 
-        list_saggital=list_saggital
+        
         fidu_coordinates=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
         #N is the no of slices
         index=1
