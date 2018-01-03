@@ -22,7 +22,7 @@ def image(plane,index):
     else:
        image=list_saggital[index-1]
 
-return image
+    return image
 
 
 def template1(plane,index):
@@ -64,7 +64,7 @@ def god_function(list_axial,list_coronal,list_saggital):
                          print 'Fiducial present at (a1,b1,c1)'
                          fidu_coordinates[a1][b1][c1]=1
 
-return  fidu_coordinates      
+        return  fidu_coordinates      
 
 
 
