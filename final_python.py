@@ -11,21 +11,6 @@ Ma=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
 Mc=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
 Ms=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
 
-
-
-
-#given plane and index of the slice this function outputs the image 
-#def image(plane,index):
-    #if plane=='axial':
-       #image=list_axial[index-1]
-    #elif plane=='coronal':
-       #image=list_coronal[index-1]
-    #else:
-       #image=list_saggital[index-1]
-
-    #return image
-
-
 #def template1(plane,index):
 def template1(img):
     #Boolean is true if image has template1 
