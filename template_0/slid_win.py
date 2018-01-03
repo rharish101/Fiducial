@@ -110,5 +110,6 @@ def sliding_windows(image, model_name, model_input_shape, label,
     images = [micro_image for micro_image in images if micro_image not in\
               to_delete]
 
-    return [micro_image[1] for micro_image in images]
+    return np.array([(sum(micro_image[0][:2]) / 2,
+                      sum(micro_image[0][2:]) / 2) for micro_image in images])
 
