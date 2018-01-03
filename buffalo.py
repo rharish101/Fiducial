@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import os
 from process import *
+from final_python import god_function
 import cv2
 
 folder = './2016.06.27 PVC Skull Model/Sequential Scan/DICOM/PA1/ST1/SE2/'
@@ -18,3 +20,5 @@ images_sagittal = map(lambda img: cv2.resize(img, (512, 512)),
 # orientation (-y, x, -z)
 images_coronal = map(lambda img: cv2.resize(img, (512, 512)),
                      np.swapaxes(temp, 0, 2)[::-1])
+
+print(god_function(images_axial, images_coronal, images_sagittal))

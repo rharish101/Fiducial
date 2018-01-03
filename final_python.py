@@ -1,10 +1,10 @@
-#python 2.7
+#!/usr/bin/env python2
 import numpy as np
 
 #enter the dimensions of the image
-x_dim=
-y_dim=
-z_dim=
+x_dim=176
+y_dim=176
+z_dim=176
 
 Ma=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
 Mc=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
@@ -26,16 +26,16 @@ return image
 
 
 def template1(plane,index):
-   image=image(plane,index)
-#Boolean is true if image has template1 
-#x,y are the coordinates of the center of concentric circles and sets Ma[x][y][index]=1 is plane='axial'....
-return {'Bool':,'x_coor':,'y_coor':}
+    image=image(plane,index)
+    #Boolean is true if image has template1 
+    #x,y are the coordinates of the center of concentric circles and sets Ma[x][y][index]=1 is plane='axial'....
+    return {'Bool': True,'x_coor': 0,'y_coor': 0}
 
 def template2(plane,index):
-   image=image(plane,index)
-#x,y are the coordinates of the center of the valley
-#returns true if template2 is found and sets Ma[x][y][index]=2 if plane='axial'...    
-return {'Bool': ,'x_coor': ,'y_coor': }
+    image=image(plane,index)
+    #x,y are the coordinates of the center of the valley
+    #returns true if template2 is found and sets Ma[x][y][index]=2 if plane='axial'...    
+    return {'Bool': True,'x_coor': 0,'y_coor': 0}
 
 def god_function(list_axial,list_coronal,list_saggital): 
         list_axial=list_axial 
@@ -62,7 +62,7 @@ def god_function(list_axial,list_coronal,list_saggital):
             for b1 in range(y_dim):
                 for c1 in range(z_dim):
                     if Ms[a1][b1][c1]==2:
-                       if (template1('saggital',a1) or template2('saggital',a1)) and (template1('saggital',b1) or template2('coronal',b1) is True:
+                       if (template1('saggital',a1) or template2('saggital',a1)) and (template1('saggital',b1) or template2('coronal',b1)):
                          print 'Fiducial present at (a1,b1,c1)'
                          fidu_coordinates[a1][b1][c1]=1
 
