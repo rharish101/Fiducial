@@ -30,7 +30,7 @@ def god_function(list_axial, list_coronal, list_sagittal):
             Ma[x, y, z] = 2
             
     for x in range(length):
-        for x in range(length):
+        for y in range(length):
             for z in range(length):
                 #if there is series of 1's then this code makes makes the 1's after the first 1 to be 0
                     if Ma[x,y,z]==1:
