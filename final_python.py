@@ -10,6 +10,16 @@ def template1(img):
 def template2(img):
     return shi_tomasi(img)
 
+def refine(list_):
+    refined_list=[list_[0]]
+    i=1
+    while(i)<len(list_):
+         if list_[i]!=list_[i-1]:
+            refined_list.append(list_[i])
+         i+=1
+    return refined_list
+
+
 def god_function(list_axial, list_coronal, list_sagittal): 
     length = len(list_axial)
     Ma = np.zeros(list_axial.shape, dtype=np.uint8)
@@ -39,6 +49,22 @@ def god_function(list_axial, list_coronal, list_sagittal):
                         Ma[x,y,z] = 0
                         z += 1
                 z += 1
+    for z in range(length):
+        #list_valley(), list_single are the lists of coordinates of the valley and single peaks in list_axial(z)
+       for y,x in list_valley:
+           for z1 in range(length):
+             l=[]
+             if (y,x) is in list_valley(list_axial[z1]):
+                 l.append(2)
+             elif (y,x) is in list_single(list_axial[z1]):
+                 l.append(1)
+             else
+                 l.append(0)
+           final_str=refine(l)
+           if final_str==[0,1,2,1,0] or final_str==[0,1,2,1] or final_str==[1,2,1,0] or final_str==[1,2,1]:
+              Ma[x,y,z]=2
+            
+                
 
     for x in range(length):
         for y in range(length):
