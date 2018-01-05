@@ -8,8 +8,6 @@ def template1(img):
                            1)
 
 def template2(img):
-    #x,y are the coordinates of the center of the valley
-    #returns true if template2 is found and sets Ma[x][y][index]=2 if plane='axial'...    
     return shi_tomasi(img)
 
 def god_function(list_axial, list_coronal, list_sagittal): 
@@ -35,14 +33,14 @@ def god_function(list_axial, list_coronal, list_sagittal):
         for y in range(length):
             for z in range(length):
                 if Ma[x][y][z] == 1 and\
-                (length - z), y in template2(list_sagittal[x]) and\
-                (length - z), x in template2(list_coronal[y]):
+                ((length - z), y) in template2(list_sagittal[x]) and\
+                ((length - z), x) in template2(list_coronal[y]):
                     fidu_coordinates.append((x, y, z))
                 elif Ma[x][y][z] == 2 and\
-                ((length - z), y in template1(list_sagittal[x]) or\
-                (length - z), y in template2(list_sagittal[x])) and\
-                ((length - z), x in template1(list_coronal[y]) or\
-                (length - z), x in template2(list_coronal[y])):
+                (((length - z), y) in template1(list_sagittal[x]) or\
+                ((length - z), y) in template2(list_sagittal[x])) and\
+                (((length - z), x) in template1(list_coronal[y]) or\
+                ((length - z), x) in template2(list_coronal[y])):
                     fidu_coordinates.append((x, y, z))
 
     return fidu_coordinates

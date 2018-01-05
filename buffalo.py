@@ -2,6 +2,7 @@
 from __future__ import print_function
 import os
 import numpy as np
+from scipy.ndimage import gaussian_filter
 from final_python import god_function
 from process import import_dicom
 import cv2
@@ -14,14 +15,18 @@ for img in sorted(os.listdir(dir_axial),
                   key=lambda img_name: int(img_name[2:]))[3:-2]:
     for _ in range(3):
         images_axial.append(import_dicom(dir_axial + img))
-images_axial = np.array(images_axial[:-1])
+images_axial = images_axial[:-1]
 
 # orientation (x, -z, y)
-images_sagittal = np.swapaxes(np.swapaxes(images_axial, 0, 2),
-                              1, 2)[:, ::-1, :]
+images_sagittal = np.array(list(map(lambda img: gaussian_filter(img, 1),
+    np.swapaxes(np.swapaxes(images_axial, 0, 2), 1, 2)[:, ::-1, :])))
 
 # orientation (y, -z, x)
-images_coronal = np.swapaxes(images_axial, 0, 1)[:, ::-1, :]
+images_coronal = np.array(list(map(lambda img: gaussian_filter(img, 1),
+    np.swapaxes(images_axial, 0, 1)[:, ::-1, :])))
+
+images_axial = np.array(list(map(lambda img: gaussian_filter(img, 1),
+                                 images_axial)))
 
 #dir_coronal = './2016.06.27 PVC Skull Model/Spiral Scan/DICOM/PA1/ST1/SE6/'
 #images_coronal = []
