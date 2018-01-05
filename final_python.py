@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 import numpy as np
 from template_0.slid_win import sliding_windows
 from process import shi_tomasi
@@ -13,43 +12,40 @@ def template2(img):
     #returns true if template2 is found and sets Ma[x][y][index]=2 if plane='axial'...    
     return shi_tomasi(img)
 
-def god_function(list_axial,list_coronal,list_saggital): 
-    x_dim=176
-    y_dim=176
-    z_dim=176
+def god_function(list_axial, list_coronal, list_sagittal): 
+    length = len(list_axial)
+    Ma = np.zeros(list_axial.shape, dtype=np.uint8)
+    Mc = np.zeros(list_axial.shape, dtype=np.uint8)
+    Ms = np.zeros(list_axial.shape, dtype=np.uint8)
 
-    Ma=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
-    Mc=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
-    Ms=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
+    fidu_coordinates = []
+    for z in range(length):
+        for y, x in template1(list_axial[z]):
+            #if (length - z), y in template2(list_sagittal[x]) and\
+            #(length - z), x in template2(list_coronal[y]):
+                #fidu_coordinates.append((x, y, z))
+            Ma[x, y, index] = 1
+        for y, x in template2(list_axial[index]):
+            #if ((length - z), y in template1(list_sagittal[x]) or\
+            #(length - z), y in template2(list_sagittal[x])) and\
+            #((length - z), x in template1(list_coronal[y]) or\
+            #(length - z), x in template2(list_coronal[y])):
+                #fidu_coordinates.append((x, y, z))
+            Ma[x, y, index] = 2
 
-    fidu_coordinates=np.zeros((x_dim,y_dim,z_dim),dtype=np.float32)
-    for index in range(1, 1 + len(list_axial)):
-        template1(list_axial[index - 1])
-        template2(list_axial[index - 1])
+    for a in range(length):
+        for b in range(length):
+            for c in range(length):
+                if Ma[a][b][c] == 1 and\
+                len(template2(list_sagittal[a])) > 0 and\
+                len(template2(list_coronal[b])) > 0:
+                    fidu_coordinates.append((a, b, c))
+                elif Ma[a][b][c] == 2 and\
+                (len(template1(list_sagittal[a])) > 0 or\
+                len(template2(list_sagittal[a])) > 0) and\
+                (len(template1(list_coronal[a])) > 0 or\
+                len(template2(list_coronal[a])) > 0):
+                    fidu_coordinates.append((a, b, c))
 
-    for a in range(x_dim):
-        for b in range(y_dim):
-            for c in range(z_dim):
-                if Ms[a][b][c]==1:
-                    if template2(list_saggital[a])['Bool'] is True and template2(list_coronal[b])['Bool'] is True:
-                        print('Fiducial present at (a,b,c)')
-                        fidu_coordinates[a][b][c]=1
+    return fidu_coordinates
 
-    for a1 in range(x_dim):
-        for b1 in range(y_dim):
-            for c1 in range(z_dim):
-                if Ms[a1][b1][c1]==2:
-                    if (template1(list_saggital[a1])['Bool'] or template2(list_saggital[a1])['Bool']) and (template1(list_saggital[b1])['Bool'] or template2(list_coronal[b1])['Bool']):
-                        print('Fiducial present at (a1,b1,c1)')
-                        fidu_coordinates[a1][b1][c1]=1
-
-    return  fidu_coordinates      
-
-
-
-
-
-        
-
-
-  
