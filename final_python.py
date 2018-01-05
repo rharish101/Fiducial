@@ -38,7 +38,6 @@ def god_function(list_axial, list_coronal, list_sagittal):
                     while(Ma[x,y,z]==1):
                         Ma[x,y,z]=0
                         z+=1
-        
 
     for x in range(length):
         for y in range(length):
