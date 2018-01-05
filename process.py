@@ -271,7 +271,7 @@ def shi_tomasi(image, maxCorners=10, qualityLevel=0.1, outline=True,
 # Cropping image
 def crop(image, ur_size=125, ul_size=100, lr_size=120, ll_size=180,
          verbose=False, **kwargs):
-     image = image[20:, :]
+     image[20:, :] = 0
      col = image.shape[1]
      upper_right_triangle = np.array([[col - ur_size, 0], [col, 0],
                                       [col, ur_size]])
