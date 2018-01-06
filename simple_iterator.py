@@ -32,20 +32,20 @@ def new_god(list_axial,list_saggital,list_coronal):
         for j in range(length):
             k=0
             if m[k,i,length-j]==1:
-                    fidu_coordinates.append(k,i,length-j) 
+                    fidu_coordinates.append(k,i,j) 
                     k+=1
-                    while(m[k,i,length-j] == 1):
-                        m[k,i,length-j] = 0
+                    while(m[k,i,j] == 1):
+                        m[k,i,j] = 0
                         k += 1 
      #refining over coronal images
      for i in range(length):
         for j in range(length):
             k=0
-            if m[j,k,length-i]==1:
-               fidu_coordinates.append(j,k,length-i)    
+            if m[j,k,i]==1:
+               fidu_coordinates.append(j,k,i)    
                k+=1
-               while(m[j,k,length-i] == 1):
-                        m[j,k,length-i] = 0
+               while(m[j,k,i] == 1):
+                        m[j,k,i] = 0
                         k += 1 
                   
      return fidu_coordinates
