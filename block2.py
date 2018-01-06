@@ -12,7 +12,8 @@ for dicom_img in sorted(os.listdir(folder), key=lambda img: int(img)):
     if 'AXIAL' in dic.ImageType:
         images_axial.append(dic)
         images_axial.append(dic)
-images_axial = np.array([dic.pixel_array for dic in sorted(images_axial,
+images_axial = np.array([np.uint8(np.where(dic.pixel_array > 255, 255,
+    dic.pixel_array)) for dic in sorted(images_axial,
     key=lambda dic: int(dic.SliceLocation))])
 
 images_sagittal = np.array(list(map(lambda img: gaussian_filter(img, 1),
