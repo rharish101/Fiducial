@@ -1,4 +1,4 @@
-#python 2.7
+#!/usr/bin/env python2
 
 from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
 import numpy as np
