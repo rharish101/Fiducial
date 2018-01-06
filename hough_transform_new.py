@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from scipy.ndimage.filters import gaussian_filter1d, gaussian_filter
+from scipy.ndimage.filters import gaussian_filter
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
@@ -10,12 +10,12 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     centers = []
     for z, img in enumerate(images_axial):
         img = cv2.medianBlur(img, 5)
-        img = thresh_hist(img)
+        img = gaussian_filter(thresh_hist(img), 2)
         cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 30, param1=50,
                                    param2=40, minRadius=10, maxRadius=0)
 
-        if circles is not None:
+        if circles is not None and len(circles[0]) <= 5:
             if verbose:
                 for i in circles[0,:]:
                     # draw the outer circle
@@ -36,7 +36,7 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 30, param1=50,
                                    param2=40, minRadius=10, maxRadius=0)
 
-        if circles is not None:
+        if circles is not None and len(circles[0]) <= 5:
             if verbose:
                 for i in circles[0,:]:
                     # draw the outer circle
@@ -58,7 +58,7 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 30, param1=50,
                                    param2=40, minRadius=10, maxRadius=0)
 
-        if circles is not None:
+        if circles is not None and len(circles[0]) <= 5:
             if verbose:
                 for i in circles[0,:]:
                     # draw the outer circle
