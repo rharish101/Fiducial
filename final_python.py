@@ -4,11 +4,13 @@ from template_0.slid_win import sliding_windows
 from process import shi_tomasi
 
 def template1(img):
-    return sliding_windows(img, './template_0/template_0_detect.h5', (50, 50),
-                           1)
+    return sliding_windows(img, './template_0/template_0_detect.h5',
+                           (1, 50, 50, 1), 1)
 
 def template2(img):
-    return shi_tomasi(img)
+    #return shi_tomasi(img)
+    return sliding_windows(img, './template_0/template_0_detect.h5',
+                           (1, 40, 40, 1), 1)
 
 def refine(list_):
     refined_list=[list_[0]]
