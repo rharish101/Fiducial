@@ -37,7 +37,8 @@ def extract_data():
     return images, labels
 
 def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
-                 height_shift_range=0.15, shear_range=60, fill_val=0,
+                 height_shift_range=0.15, shear_range=60,
+                 borderMode=cv2.BORDER_REPLICATE, fill_val=0,
                  horizontal_flip=True, vertical_flip=True, **kwargs):
     total_length = len(images)
     for image, label in zip(images[:total_length], labels[:total_length]):
@@ -51,6 +52,7 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
             rot_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
             images_now.append(np.uint8(cv2.warpAffine(images_now[0], rot_matrix,
                                                       (cols, rows),
+                                                      borderMode=borderMode,
                                                       borderValue=fill_val)))
 
         # Translation
@@ -61,7 +63,8 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
                                            [0, 1, rows * h_shift]])
                 for img in images_now[:length]:
                     images_now.append(np.uint8(cv2.warpAffine(img, shift_matrix,
-                        (cols, rows), borderValue=fill_val)))
+                        (cols, rows), borderMode=borderMode,
+                        borderValue=fill_val)))
 
         # Shear
         length = len(images_now)
@@ -73,7 +76,8 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
             shear_matrix = cv2.getAffineTransform(pts1, pts2)
             for img in images_now[:length]:
                 images_now.append(np.uint8(cv2.warpAffine(img, shear_matrix,
-                    (cols, rows), borderValue=fill_val)))
+                    (cols, rows), borderMode=borderMode,
+                    borderValue=fill_val)))
 
         # Flip
         if vertical_flip:
@@ -119,8 +123,8 @@ def get_data(from_disk=True, **kwargs):
             np.save('template_0_' + arr + '.npy', data[arr].astype(np.uint8))
         del data
 
-    data = {}
+    data = []
     for arr in keys:
-        data[arr] = np.load('template_0_' + arr + '.npy', mmap_mode='r')
-    return data.values()
+        data.append(np.load('template_0_' + arr + '.npy', mmap_mode='r'))
+    return data
 
