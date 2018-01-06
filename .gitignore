@@ -10,6 +10,10 @@ template_0/template_0_train_data.npy
 template_0/template_0_train_labels.npy
 template_0/template_0_test_data.npy
 template_0/template_0_test_labels.npy
+template_1/template_1_train_data.npy
+template_1/template_1_train_labels.npy
+template_1/template_1_test_data.npy
+template_1/template_1_test_labels.npy
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

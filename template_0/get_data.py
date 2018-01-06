@@ -9,21 +9,6 @@ def extract_data():
     images = []
     labels = []
 
-    folder = '../Fiducial data/PVC skull model/Sequential scan/Patient-BARC '\
-            'ACRYLIC SKULL/Study_34144_CT_SKULL[20160627]/Series_002_Plain Scan/'
-    for i in range(5):
-        for img in os.listdir(folder):
-            image = cv2.imread(folder + img, 0)
-            for _ in range(10):
-                a = np.random.uniform(0, image.shape[0] - 50, []).astype(np.int)
-                b = np.random.uniform(0, image.shape[0] - 50, []).astype(np.int)
-                image = gaussian_filter(image[a:(a + 50), b:(b + 50)], 2)
-                if image.max() > 100:
-                    break
-            if image.max() > 100:
-                images.append(image)
-                labels.append(0)
-
     for fold in os.listdir('.'):
         if not os.path.isdir(fold):
             continue
@@ -33,6 +18,22 @@ def extract_data():
             image = cv2.imread(fold + '/' + img, 0)
             images.append(image)
             labels.append(1)
+
+    folder = '../Fiducial data/PVC skull model/Sequential scan/Patient-BARC '\
+            'ACRYLIC SKULL/Study_34144_CT_SKULL[20160627]/Series_002_Plain Scan/'
+    rows, cols = images[0].shape
+    for i in range(5):
+        for img in os.listdir(folder):
+            image = cv2.imread(folder + img, 0)
+            for _ in range(10):
+                a = np.int(np.random.uniform(0, image.shape[0] - rows, []))
+                b = np.int(np.random.uniform(0, image.shape[0] - cols, []))
+                image = gaussian_filter(image[a:(a + rows), b:(b + cols)], 2)
+                if image.max() > 100:
+                    break
+            if image.max() > 100:
+                images.append(image)
+                labels.append(0)
 
     return images, labels
 
