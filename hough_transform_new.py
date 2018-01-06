@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 from process import img_hist, func_minima, clahe_img, display, thresh_hist
 import sys
 
-def hough(images_axial, images_coronal, images_sagittal):
+def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     centers = []
     for z, img in enumerate(images_axial):
         img = cv2.medianBlur(img, 5)
@@ -16,6 +16,14 @@ def hough(images_axial, images_coronal, images_sagittal):
                                    param2=40, minRadius=10, maxRadius=0)
 
         if circles is not None:
+            if verbose:
+                for i in circles[0,:]:
+                    # draw the outer circle
+                    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+                    #draw the center of the circle
+                    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),2)
+                    display(cimg, pause=0.5)
+
             circles = np.uint16(np.around(circles))
             centers.extend([(i[1], i[0], z) for i in circles[0, :]])
         sys.stdout.write("\r" + str(z) + " images done out of " +\
@@ -29,6 +37,14 @@ def hough(images_axial, images_coronal, images_sagittal):
                                    param2=40, minRadius=10, maxRadius=0)
 
         if circles is not None:
+            if verbose:
+                for i in circles[0,:]:
+                    # draw the outer circle
+                    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+                    #draw the center of the circle
+                    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),2)
+                    display(cimg, pause=0.5)
+
             circles = np.uint16(np.around(circles))
             centers.extend([(i[1], y, len(images_axial) - i[0]) for i in\
                             circles[0, :]])
@@ -43,13 +59,24 @@ def hough(images_axial, images_coronal, images_sagittal):
                                    param2=40, minRadius=10, maxRadius=0)
 
         if circles is not None:
+            if verbose:
+                for i in circles[0,:]:
+                    # draw the outer circle
+                    cv2.circle(cimg,(i[0],i[1]),i[2],(0,255,0),2)
+                    #draw the center of the circle
+                    cv2.circle(cimg,(i[0],i[1]),2,(0,0,255),2)
+                    display(cimg, pause=0.5)
+
             circles = np.uint16(np.around(circles))
             centers.extend([(x, i[1], len(images_axial) - i[0]) for i in\
                             circles[0, :]])
-        sys.stdout.write("\r" + str(z) + " images done out of " +\
+        sys.stdout.write("\r" + str(x) + " images done out of " +\
                          str(len(images_sagittal)) + "\r")
         sys.stdout.flush()
+
     sys.stdout.write('\n')
     sys.stdout.flush()
+    if verbose:
+        display.blank = True
     return centers
 
