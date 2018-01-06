@@ -306,7 +306,7 @@ args = parser.parse_args()
 if args.image:
     try:
         img = import_dicom(args.image)
-    except InvalidDicomError:
+    except dicom.errors.InvalidDicomError:
         img = cv2.imread(args.image, 0)
     if img is None:
         raise Exception('Image is of an unsupported type')
