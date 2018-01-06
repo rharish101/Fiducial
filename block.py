@@ -34,8 +34,8 @@ images_axial = np.array(list(map(lambda img: gaussian_filter(img, 1),
 if __name__ == '__main__':
     print("Starting detection...")
     xs, ys, zs = zip(*hough(images_axial, images_coronal, images_sagittal))
-    xs = np.array(xs) * pixel_spacing[1]
-    ys = np.array(ys) * pixel_spacing[0]
-    zs = np.array(zs) * 512 * (pixel_spacing[0] / len(zs))
+    xs = np.int32(np.array(xs) * pixel_spacing[1])
+    ys = np.int32(np.array(ys) * pixel_spacing[0])
+    zs = np.int32(np.array(zs) * 512 * (pixel_spacing[0] / len(zs)))
     print(list(zip(xs, ys, zs)))
 

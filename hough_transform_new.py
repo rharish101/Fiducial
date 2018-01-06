@@ -10,7 +10,7 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     centers = []
     for z, img in enumerate(images_axial):
         img = cv2.medianBlur(img, 5)
-        img = thresh_hist(img)
+        #img = thresh_hist(img)
         cimg = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 30, param1=50,
                                    param2=40, minRadius=10, maxRadius=0)
