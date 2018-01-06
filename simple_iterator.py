@@ -31,7 +31,7 @@ def new_god(list_axial,list_saggital,list_coronal):
      for i in range(length):
         for j in range(length):
             k=0
-            if m[k,i,length-j]==1:
+            if m[k,i,j]==1:
                     fidu_coordinates.append(k,i,j) 
                     k+=1
                     while(m[k,i,j] == 1):
