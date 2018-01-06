@@ -32,15 +32,16 @@ def extract_data():
                 if image.max() > 100:
                     break
             if image.max() > 100:
-                images.append(image)
+                images.append(gaussian_filter(image, 1))
                 labels.append(0)
 
     return images, labels
 
-def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
-                 height_shift_range=0.15, shear_range=60,
+def augment_data(images, labels, rotation_range=90, width_shift_range=0.2,
+                 height_shift_range=0.2, shear_range=60,
                  borderMode=cv2.BORDER_REPLICATE, fill_val=0,
-                 horizontal_flip=True, vertical_flip=True, **kwargs):
+                 horizontal_flip=True, vertical_flip=True, worsen=True,
+                 **kwargs):
     total_length = len(images)
     for image, label in zip(images[:total_length], labels[:total_length]):
         if len(image.shape) == 3:
@@ -49,7 +50,7 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
         rows, cols = image.shape
 
         # Rotation
-        for angle in np.arange(15, rotation_range + 1, 15):
+        for angle in np.arange(10, rotation_range + 1, 10):
             rot_matrix = cv2.getRotationMatrix2D((cols/2, rows/2), angle, 1)
             images_now.append(np.uint8(cv2.warpAffine(images_now[0], rot_matrix,
                                                       (cols, rows),
@@ -89,6 +90,13 @@ def augment_data(images, labels, rotation_range=90, width_shift_range=0.15,
             length = len(images_now)
             for img in images_now[:length]:
                 images_now.append(np.uint8(cv2.flip(img, flipCode=1)))
+
+        # Worsen
+        if worsen:
+            length = len(images_now)
+            for img in images_now[:length]:
+                images_now.append(cv2.resize(cv2.resize(img, (10, 10)),
+                                             images_now[0].shape))
 
         images += images_now[1:]
         labels += (label * np.ones((len(images_now) - 1,))).tolist()

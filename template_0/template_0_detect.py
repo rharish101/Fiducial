@@ -35,8 +35,11 @@ test_split = 0.3
 train_data, train_labels, test_data, test_labels = get_data()
 #model.fit_generator(generator.flow(train_data, train_labels, batch_size=32),
                     #steps_per_epoch=100, epochs=100, callbacks=[early_stop])
-model.fit(train_data, train_labels, batch_size=32, epochs=100,
-          callbacks=[early_stop])
+try:
+    model.fit(train_data, train_labels, batch_size=32, epochs=100,
+            callbacks=[early_stop])
+except KeyboardInterrupt:
+    pass
 print(model.evaluate(test_data, test_labels, batch_size=200))
 
 response = input("Do you want to save this model? (Y/n): ")
