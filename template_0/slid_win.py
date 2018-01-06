@@ -73,7 +73,7 @@ def sliding_windows(image, model_name, model_input_shape, label,
                     window_size=(30, 30), stride_size=(10, 10),
                     resize_factor=1.25, min_size=(100, 100), clahe=False,
                     overlap_threshold=0.9, border_colour=None,
-                    return_images=False, verbose=False):
+                    return_images=False, label_thresh=0.75, verbose=False):
     model = load_model(model_name)
     images = []
 
@@ -100,9 +100,9 @@ def sliding_windows(image, model_name, model_input_shape, label,
 
             prediction = model.predict(np.resize(gaussian_filter(micro_image,
                 1), model_input_shape), batch_size=1)
-            if int(prediction[0] >= 0.5) == label:
-                images.append(np.array((int(pow(resize_factor, i)) *\
-                                        micro_image_box, micro_image)))
+            if int(prediction[0] >= label_thresh) == label:
+                images.append((int(pow(resize_factor, i)) * micro_image_box,
+                              micro_image))
         if verbose:
             print("Pyramid level " + str(i + 1) + " done")
 

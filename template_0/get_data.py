@@ -34,6 +34,8 @@ def extract_data():
             if image.max() > 100:
                 images.append(gaussian_filter(image, 1))
                 labels.append(0)
+    images.append(np.zeros((rows, cols)))
+    labels.append(0)
 
     return images, labels
 
