@@ -68,6 +68,7 @@ img = cv2.imread('./Desktop/10.png',0)
 img = cv2.medianBlur(img,5)
 img=thresh_hist(img)
 cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+#hyperparameters for acrelic 1
 circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,30,
                             param1=50,param2=40,minRadius=10,maxRadius=0)
 
