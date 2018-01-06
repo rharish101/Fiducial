@@ -2,12 +2,13 @@ from dicom.errors import InvalidDicomError
 from process import import_dicom, display
 from template_0.slid_win import sliding_windows
 from tkinter import TclError
+import cv2
 
 def display_slid_win(img_path, template=0):
     try:
         img = import_dicom(img_path)
     except InvalidDicomError:
-        img = cv2.imread(args.image, 0)
+        img = cv2.imread(img_path, 0)
     if img is None:
         raise Exception('Image is of an unsupported type')
 
@@ -16,7 +17,7 @@ def display_slid_win(img_path, template=0):
             '_detect.h5'
     try:
         for count, img in enumerate(sliding_windows(img, model, (1, 50, 50, 1),
-                                                    1):
+                                                    1, return_images=True)):
             display(img, title=count, pause=1)
     except (KeyboardInterrupt, TclError):
         pass

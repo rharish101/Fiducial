@@ -56,9 +56,9 @@ def god_function(list_axial, list_coronal, list_sagittal):
        for y,x in list_valley:
            for z1 in range(length):
              l=[]
-             if (y,x) is in list_valley(list_axial[z1]):
+             if (y,x) in list_valley(list_axial[z1]):
                  l.append(2)
-             elif (y,x) is in list_single(list_axial[z1]):
+             elif (y,x) in list_single(list_axial[z1]):
                  l.append(1)
              else
                  l.append(0)
