@@ -3,6 +3,12 @@
 2016.05.26\ Glass\ Scan 1\ mm.zip
 2016.06.27\ PVC\ Skull Model/
 2016.06.27\ PVC\ Skull Model.zip
+2012.09.15 ACRELIC1 CT Scan Data from ACTREC/
+2012.09.15 ACRELIC1 CT Scan Data from ACTREC.zip
+2012.09.15 ACRELIC2 CT Scan Data from ACTREC/
+2012.09.15 ACRELIC2 CT Scan Data from ACTREC.zip
+09171700.zip
+09171420.zip
 Fiducial data/
 Fiducial data.zip
 test.py
@@ -14,6 +20,7 @@ template_1/template_1_train_data.npy
 template_1/template_1_train_labels.npy
 template_1/template_1_test_data.npy
 template_1/template_1_test_labels.npy
+hough.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
