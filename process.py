@@ -221,6 +221,8 @@ def longest_edge(image, mode='laplacian', outline_filter_sigma=2,
                                                   cv2.CHAIN_APPROX_SIMPLE)
     max_len = 0
     outline = None
+    if len(contours) == 0:
+        return image
     for contour in contours:
         if contour.shape[0] > max_len:
             max_len = contour.shape[0]
@@ -259,6 +261,8 @@ def shi_tomasi(image, maxCorners=10, qualityLevel=0.1, outline=True,
        image = longest_edge(image, verbose=verbose, **kwargs)
 
     corners = cv2.goodFeaturesToTrack(image, maxCorners, qualityLevel, 10)
+    if corners is None:
+        return []
     corners = np.reshape(np.int_(corners), (-1, 2))
 
     if verbose:
@@ -271,7 +275,7 @@ def shi_tomasi(image, maxCorners=10, qualityLevel=0.1, outline=True,
 # Cropping image
 def crop(image, ur_size=125, ul_size=100, lr_size=120, ll_size=180,
          verbose=False, **kwargs):
-     image[20:, :] = 0
+     image = image[20:, :]
      col = image.shape[1]
      upper_right_triangle = np.array([[col - ur_size, 0], [col, 0],
                                       [col, ur_size]])
@@ -286,6 +290,9 @@ def crop(image, ur_size=125, ul_size=100, lr_size=120, ll_size=180,
      image = cv2.fillConvexPoly(image, lower_right_triangle, color)
      image = cv2.fillConvexPoly(image, lower_left_triangle, color)
      image = cv2.fillConvexPoly(image, upper_left_triangle, color)
+
+     image = np.concatenate((np.zeros((20, img.shape[1]), dtype=np.uint8),
+                            image))
 
      if verbose:
         display(image, 'Cropped Image')
