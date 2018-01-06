@@ -5,13 +5,74 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-path=''
+def img_hist(image, hist_filter_sigma=2):
+    hist = cv2.calcHist([image], [0], None, [256], [0, 256])
+    hist = np.reshape(hist, (len(hist)))
+    return gaussian_filter1d(hist, hist_filter_sigma)
+
+def func_minima(func):
+    for i in range(len(func)):
+        if i > 0 and i < (len(func) -1) and func[i] <= func[i - 1] and\
+        func[i] <= func[i + 1]:
+            return i
+
+def clahe_img(image, clipLimit=2.0, tileGridSize=(8, 8), verbose=False):
+    improved = cv2.createCLAHE(clipLimit=clipLimit,
+                               tileGridSize=tileGridSize).apply(image)
+    if verbose:
+        display(improved, 'After CLAHE')
+    return improved.astype(np.uint8)
+
+def display(image, title=None, pause=None):
+    if pause is None:
+        plt.figure()
+    if title is not None:
+        plt.title(title)
+
+    if display.blank or pause is None:
+        display.image = plt.imshow(image, cmap='gray', vmin=0, vmax=255)
+        display.blank = False
+    else:
+        display.image.set_data(image)
+
+    if pause:
+        plt.pause(pause)
+    else:
+        plt.show(block=False)
+display.blank = True
+display.image = None
+
+
+def thresh_hist(image, thresh_filter_sigma=2.7, clahe=True,verbose=False,
+                **kwargs):
+    if clahe:
+        image = clahe_img(image, verbose=verbose)
+    hist = img_hist(image, **kwargs)
+    threshold = func_minima(hist)
+    new_img = np.where(image>=threshold, 255 * np.ones(image.shape),
+                       np.zeros(image.shape))
+    new_img = gaussian_filter(new_img, thresh_filter_sigma)
+    thresh_img = ((new_img.astype(np.float32) / new_img.max()) * 255).astype(
+                 np.uint8)
+
+    if verbose:
+        plt.figure()
+        plt.title('Image Histogram')
+        plt.plot(np.arange(len(hist)), hist)
+        plt.plot(threshold, hist[threshold], 'rx')
+        plt.show(block=False)
+
+        display(thresh_img, 'Thresholded Image')
+
+    return thresh_img
+
+#path=''
 img=cv2.imread(path)
 img = gaussian_filter(img,2)
-#cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
+cimg = cv2.cvtColor(img,cv2.COLOR_GRAY2BGR)
 
-circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,5,
-                            param1=50,param2=25,minRadius=0,maxRadius=80)
+circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,1,
+                            param1=50,param2=40,minRadius=50,maxRadius=0)
 
 circles = np.uint16(np.around(circles))
 #(i[0],i[1]) is the center of the circle and i[2] is the radius of the circle
