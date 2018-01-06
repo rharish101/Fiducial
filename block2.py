@@ -25,3 +25,9 @@ images_coronal = np.array(list(map(lambda img: gaussian_filter(img, 1),
 images_axial = np.array(list(map(lambda img: gaussian_filter(img, 1),
                                  images_axial)))
 
+if __name__ == '__main__':
+    xs, ys = zip(*hough(images_axial, images_coronal, images_sagittal))
+    xs = np.array(xs) * pixel_spacing[1]
+    ys = np.array(ys) * pixel_spacing[1]
+    print(zip(xs, ys))
+
