@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-def refinement_axial(l, shape):
+def refinement_axial(l, shape, mode='extreme'):
     new_l=[]
     x_dim, y_dim, z_dim = shape
     for (x,y,z) in l:
@@ -10,10 +10,15 @@ def refinement_axial(l, shape):
             while k < z_dim:
                 if (i,j,k) in new_l:
                     k+=1
-                    while k < z_dim:
-                        if (i,j,k) in new_l:
+                    if mode == 'extreme':
+                        while k < z_dim:
+                            if (i,j,k) in new_l:
+                                new_l.remove((i,j,k))
+                            k+=1
+                    else:
+                        while (i,j,k) in new_l:
                             new_l.remove((i,j,k))
-                        k+=1
+                            k+=1
                 k+=1
                       
     final_l=[]
