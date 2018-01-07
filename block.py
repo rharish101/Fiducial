@@ -36,6 +36,6 @@ if __name__ == '__main__':
     xs, ys, zs = zip(*hough(images_axial, images_coronal, images_sagittal))
     xs = np.int32(np.array(xs) * pixel_spacing[1])
     ys = np.int32(np.array(ys) * pixel_spacing[0])
-    zs = np.int32(np.array(zs) * 512 * (pixel_spacing[0] / len(zs)))
+    zs = np.int32(np.array(zs) * 512 * (pixel_spacing[0] / len(images_axial)))
     print(list(zip(xs, ys, zs)))
 

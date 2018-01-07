@@ -35,6 +35,6 @@ if __name__ == '__main__':
     xs, ys, zs = zip(*hough(images_axial, images_coronal, images_sagittal))
     xs = np.array(xs) * pixel_spacing[1]
     ys = np.array(ys) * pixel_spacing[0]
-    zs = np.array(zs) * 512 * (pixel_spacing[0] / len(zs))
+    zs = np.array(zs) * 512 * (pixel_spacing[0] / len(images_axial))
     print(zip(xs, ys, zs))
 
