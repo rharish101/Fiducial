@@ -6,6 +6,7 @@ from scipy.ndimage import gaussian_filter
 from final_python import god_function
 from process import crop
 import cv2
+import dicom
 
 # NOTE: Refer to https://en.wikipedia.org/wiki/Anatomical_plane for orientation
 # orientation (z, y, x); origin is corner of cube near right chin
@@ -20,7 +21,9 @@ for img in sorted(os.listdir(dir_axial),
         images_axial.append(crop(cv2.imread(dir_axial + img, 0)))
 
 print("Forming arrays...")
-pixel_spacing = list(map(float, images_axial[0].PixelSpacing))
+dicom_file = '/home/rharish/Programs/Python/Fiducial/2016.05.26 Glass Scan 1'\
+             ' mm/Glass Scan Axial 1.25 mm/DICOM/PA1/ST1/SE2/IM1'
+pixel_spacing = list(map(float, dicom.read_file(dicom_file).PixelSpacing))
 images_axial = images_axial[:-1]
 
 # orientation (x, -z, y)

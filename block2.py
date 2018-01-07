@@ -4,6 +4,7 @@ import dicom
 import os
 import numpy as np
 from scipy.ndimage import gaussian_filter
+from hough_transform_new import hough
 
 folder = '/home/rharish/Programs/Python/Fiducial/2012.09.15 ACRELIC2 CT Scan '\
          'Data from ACTREC/09171420/'
@@ -33,8 +34,8 @@ images_axial = np.array(list(map(lambda img: gaussian_filter(img, 1),
 if __name__ == '__main__':
     print("Starting detection...")
     xs, ys, zs = zip(*hough(images_axial, images_coronal, images_sagittal))
-    xs = np.array(xs) * pixel_spacing[1]
-    ys = np.array(ys) * pixel_spacing[0]
-    zs = np.array(zs) * 512 * (pixel_spacing[0] / len(images_axial))
-    print(zip(xs, ys, zs))
+    xs = np.int32(np.array(xs) * pixel_spacing[1])
+    ys = np.int32(np.array(ys) * pixel_spacing[0])
+    zs = np.int32(np.array(zs) * 512 * (pixel_spacing[0] / len(images_axial)))
+    print(list(zip(xs, ys, zs)))
 

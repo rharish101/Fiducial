@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 from scipy.ndimage.filters import gaussian_filter
 import numpy as np
 import cv2
@@ -6,6 +7,7 @@ from matplotlib import pyplot as plt
 from process import img_hist, func_minima, clahe_img, display, thresh_hist
 from refinement import *
 import sys
+from sklearn.cluster import DBSCAN
 
 def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     centers_axial = []
@@ -81,7 +83,28 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     sys.stdout.flush()
     if verbose:
         display.blank = True
-    return refinement_axial(centers_axial, images_axial.shape[::-1]) +\
-           refinement_coronal(centers_coronal, images_axial.shape[::-1]) +\
-           refinement_saggital(centers_sagittal, images_axial.shape[::-1])
+    print("Refining...")
+    raw = refinement_axial(centers_axial, images_axial.shape[::-1]) +\
+          refinement_coronal(centers_coronal, images_axial.shape[::-1]) +\
+          refinement_saggital(centers_sagittal, images_axial.shape[::-1])
+
+    print("Clustering...")
+    clust = DBSCAN(eps=100, leaf_size=4, min_samples=1)
+    predictions = clust.fit_predict(raw)
+    labels = set(predictions)
+    final = []
+    for label in list(labels):
+        centroid = [0, 0, 0]
+        count = 0
+        for i in range(len(raw)):
+            if predictions[i] == label:
+                count += 1
+                centroid[0] += raw[i][0]
+                centroid[1] += raw[i][1]
+                centroid[2] += raw[i][2]
+        centroid[0] /= count
+        centroid[1] /= count
+        centroid[2] /= count
+        final.append(centroid)
+    return final
 

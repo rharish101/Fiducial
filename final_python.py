@@ -17,5 +17,24 @@ def god_function(list_axial, list_coronal, list_sagittal):
         shi = template2(list_axial[z])
         corners.extend([list(corn) + [z] for corn in shi])
 
-    return refinement_axial(corners, list_axial.shape[::-1], mode='soft')
+    raw = refinement_axial(corners, list_axial.shape[::-1], mode='soft')
+    print("Clustering...")
+    clust = DBSCAN(eps=100, leaf_size=4, min_samples=1)
+    predictions = clust.fit_predict(raw)
+    labels = set(predictions)
+    final = []
+    for label in list(labels):
+        centroid = [0, 0, 0]
+        count = 0
+        for i in range(len(raw)):
+            if predictions[i] == label:
+                count += 1
+                centroid[0] += raw[i][0]
+                centroid[1] += raw[i][1]
+                centroid[2] += raw[i][2]
+        centroid[0] /= count
+        centroid[1] /= count
+        centroid[2] /= count
+        final.append(centroid)
+    return final
 

@@ -3,9 +3,9 @@ def refinement_axial(l, shape, mode='extreme'):
     new_l=[]
     x_dim, y_dim, z_dim = shape
     for (x,y,z) in l:
-        new_l.append((x//5,y//5,z))
-    for i in range(x_dim//5):
-        for j in range(y_dim//5):
+        new_l.append((x//7,y//7,z))
+    for i in range(x_dim//7):
+        for j in range(y_dim//7):
             k = 0
             while k < z_dim:
                 if (i,j,k) in new_l:
@@ -23,16 +23,16 @@ def refinement_axial(l, shape, mode='extreme'):
                       
     final_l=[]
     for (x,y,z) in new_l:
-         final_l.append((5*x,5*y,z))
+         final_l.append((7*x,7*y,z))
     return final_l
 
 def refinement_coronal(l, shape):
     new_l=[]
     x_dim, y_dim, z_dim = shape
     for (x,y,z) in l:
-        new_l.append((x//5,y,z//5))
-    for i in range(x_dim//5):
-        for k in range(z_dim//5):
+        new_l.append((x//7,y,z//7))
+    for i in range(x_dim//7):
+        for k in range(z_dim//7):
             j = 0
             while j < y_dim:
                 if (i,j,k) in new_l:
@@ -44,16 +44,16 @@ def refinement_coronal(l, shape):
                 j+=1
     final_l=[]
     for (x,y,z) in new_l:
-          final_l.append((5*x,y,5*z))
+          final_l.append((7*x,y,7*z))
     return final_l
 
 def refinement_saggital(l, shape):
     new_l=[]
     x_dim, y_dim, z_dim = shape
     for (x,y,z) in l:
-        new_l.append((x,y//5,z//5))
-    for j in range(y_dim//5):
-         for k in range(z_dim//5):
+        new_l.append((x,y//7,z//7))
+    for j in range(y_dim//7):
+         for k in range(z_dim//7):
              i = 0
              while i < x_dim:
                  if (i,j,k) in new_l:
@@ -65,5 +65,5 @@ def refinement_saggital(l, shape):
                  i+=1
     final_l=[]
     for (x,y,z) in new_l:
-          final_l.append((x,5*y,5*z))
+          final_l.append((x,7*y,7*z))
     return final_l
