@@ -4,10 +4,11 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 from process import img_hist, func_minima, clahe_img, display, thresh_hist
+from refinement import *
 import sys
 
 def hough(images_axial, images_coronal, images_sagittal, verbose=False):
-    centers = []
+    centers_axial = []
     for z, img in enumerate(images_axial):
         img = cv2.medianBlur(img, 5)
         img = gaussian_filter(thresh_hist(img), 2)
@@ -25,10 +26,11 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
                     display(cimg, pause=0.5)
 
             circles = np.uint16(np.around(circles))
-            centers.extend([(i[1], i[0], z) for i in circles[0, :]])
+            centers_axial.extend([(i[1], i[0], z) for i in circles[0, :]])
         sys.stdout.write("\r" + str(z) + " images done out of " +\
                          str(len(images_axial)) + "\r")
         sys.stdout.flush()
+    centers_coronal = []
     for y, img in enumerate(images_coronal):
         img = cv2.medianBlur(img, 5)
         img = thresh_hist(img)
@@ -46,11 +48,12 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
                     display(cimg, pause=0.5)
 
             circles = np.uint16(np.around(circles))
-            centers.extend([(i[1], y, len(images_axial) - i[0]) for i in\
+            centers_coronal.extend([(i[1], y, len(images_axial) - i[0]) for i in\
                             circles[0, :]])
         sys.stdout.write("\r" + str(y) + " images done out of " +\
                          str(len(images_coronal)) + "\r")
         sys.stdout.flush()
+    centers_sagittal = []
     for x, img in enumerate(images_sagittal):
         img = cv2.medianBlur(img, 5)
         img = thresh_hist(img)
@@ -68,7 +71,7 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
                     display(cimg, pause=0.5)
 
             circles = np.uint16(np.around(circles))
-            centers.extend([(x, i[1], len(images_axial) - i[0]) for i in\
+            centers_sagittal.extend([(x, i[1], len(images_axial) - i[0]) for i in\
                             circles[0, :]])
         sys.stdout.write("\r" + str(x) + " images done out of " +\
                          str(len(images_sagittal)) + "\r")
@@ -78,5 +81,7 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     sys.stdout.flush()
     if verbose:
         display.blank = True
-    return centers
+    return refinement_axial(centers_axial, images_axial.shape[::-1]) +\
+           refinement_coronal(centers_coronal, images_axial.shape[::-1]) +\
+           refinement_saggital(centers_sagittal, images_axial.shape[::-1])
 
