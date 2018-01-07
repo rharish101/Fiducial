@@ -10,8 +10,9 @@ def refinement_axial(l, shape):
             while k < z_dim:
                 if (i,j,k) in new_l:
                     k+=1
-                    while (i,j,k) in new_l:
-                        new_l.remove((i,j,k))
+                    while k < z_dim:
+                        if (i,j,k) in new_l:
+                            new_l.remove((i,j,k))
                         k+=1
                 k+=1
                       
@@ -31,8 +32,9 @@ def refinement_coronal(l, shape):
             while j < y_dim:
                 if (i,j,k) in new_l:
                     j+=1 
-                    while (i,j,k) in new_l: 
-                        new_l.remove((i,j,k))
+                    while j < y_dim:
+                        if (i,j,k) in new_l: 
+                            new_l.remove((i,j,k))
                         j+=1
                 j+=1
     final_l=[]
@@ -51,9 +53,10 @@ def refinement_saggital(l, shape):
              while i < x_dim:
                  if (i,j,k) in new_l:
                     i+=1 
-                    while (i,j,k) in new_l: 
-                         new_l.remove((i,j,k))
-                         i+=1
+                    while i < x_dim:
+                        if (i,j,k) in new_l: 
+                            new_l.remove((i,j,k))
+                        i+=1
                  i+=1
     final_l=[]
     for (x,y,z) in new_l:
