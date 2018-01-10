@@ -83,13 +83,14 @@ def hough(images_axial, images_coronal, images_sagittal, verbose=False):
     sys.stdout.flush()
     if verbose:
         display.blank = True
-    print("Refining...")
-    raw = refinement_axial(centers_axial, images_axial.shape[::-1]) +\
-          refinement_coronal(centers_coronal, images_axial.shape[::-1]) +\
-          refinement_saggital(centers_sagittal, images_axial.shape[::-1])
+    raw = centers_axial + centers_coronal + centers_sagittal
+    #print("Refining...")
+    #raw = refinement_axial(centers_axial, images_axial.shape[::-1]) +\
+          #refinement_coronal(centers_coronal, images_axial.shape[::-1]) +\
+          #refinement_saggital(centers_sagittal, images_axial.shape[::-1])
 
     print("Clustering...")
-    clust = DBSCAN(eps=100, leaf_size=4, min_samples=1)
+    clust = DBSCAN(eps=150, leaf_size=4, min_samples=1)
     predictions = clust.fit_predict(raw)
     labels = set(predictions)
     final = []

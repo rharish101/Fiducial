@@ -3,6 +3,7 @@ import numpy as np
 from template_0.slid_win import sliding_windows
 from process import shi_tomasi
 from refinement import refinement_axial
+from sklearn.cluster import DBSCAN
 
 def template2(img):
     return shi_tomasi(img, maxCorners=10, qualityLevel=0.25)
@@ -17,9 +18,11 @@ def god_function(list_axial, list_coronal, list_sagittal):
         shi = template2(list_axial[z])
         corners.extend([list(corn) + [z] for corn in shi])
 
-    raw = refinement_axial(corners, list_axial.shape[::-1], mode='soft')
+    #print("Refining...")
+    #raw = refinement_axial(corners, list_axial.shape[::-1], mode='soft')
+    raw = corners
     print("Clustering...")
-    clust = DBSCAN(eps=100, leaf_size=4, min_samples=1)
+    clust = DBSCAN(eps=50, leaf_size=14, min_samples=1)
     predictions = clust.fit_predict(raw)
     labels = set(predictions)
     final = []
